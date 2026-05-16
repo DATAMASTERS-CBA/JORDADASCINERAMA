@@ -676,6 +676,17 @@
         .session-edit-row:hover { border-color: var(--secondary); }
         .session-edit-row input { padding: 8px; font-size: 0.9rem; }
 
+        /* Sincronización en tiempo real */
+        .sync-badge {
+            position: fixed; bottom: 20px; right: 20px;
+            background: rgba(0,0,0,0.8); padding: 8px 15px;
+            border-radius: 20px; font-size: 0.7rem;
+            color: #00ff88; z-index: 999;
+            font-family: monospace; border: 1px solid #00ff88;
+            backdrop-filter: blur(5px);
+        }
+        .sync-badge i { margin-right: 5px; }
+
         @media print {
             .no-print { display: none !important; }
             body { background: white; color: black; }
@@ -684,6 +695,7 @@
             .ledger-table th { background: #ddd; color: #000; }
             .ledger-debit { color: #c00; }
             .ledger-credit { color: #060; }
+            .sync-badge { display: none; }
         }
     </style>
 </head>
@@ -1110,11 +1122,12 @@
     </div>
 </div>
 
+<!-- Indicador de sincronización en tiempo real -->
+<div class="sync-badge no-print"><i class="fa-solid fa-cloud-arrow-up"></i> <span id="sync-status">Sincronizado</span></div>
+
 <script>
     // ══════════════════════════════════════════════════════════════
-    //  🔥 CONFIGURACIÓN FIREBASE
-    //  Reemplazá estos valores con los de tu proyecto
-    //  (Firebase Console → Configuración del proyecto → Tu app)
+    //  🔥 CONFIGURACIÓN FIREBASE (TIEMPO REAL)
     // ══════════════════════════════════════════════════════════════
     const FIREBASE_CONFIG = {
         apiKey:            "AIzaSyCeC8O4X6tD2qCekDaKV9wZVs48TUaSmVU",
@@ -1130,9 +1143,69 @@
     const firestoreDB = firebase.firestore();
     const NEBULA_DOC  = firestoreDB.collection('nebula').doc('main');
 
+    // Control de sincronización para evitar bucles
+    let isSyncing = false;
+    let isFirstLoad = true;
+
+    function updateSyncStatus(text, isError = false) {
+        const el = document.getElementById('sync-status');
+        if (el) {
+            el.innerText = text;
+            if (isError) {
+                el.style.color = '#ff6688';
+            } else if (text === 'Sincronizado') {
+                el.style.color = '#44ffaa';
+            } else {
+                el.style.color = '#ffaa44';
+            }
+        }
+    }
+
+    // Subir datos a Firestore
+    async function pushToFirestore() {
+        if (isSyncing) return;
+        isSyncing = true;
+        updateSyncStatus('Guardando...');
+        try {
+            await NEBULA_DOC.set(db);
+            updateSyncStatus('Sincronizado');
+        } catch(e) {
+            console.warn('Error Firestore:', e);
+            updateSyncStatus('Error local', true);
+            localStorage.setItem('nebula_corp_db_backup', JSON.stringify(db));
+        }
+        isSyncing = false;
+    }
+
+    // Recibir datos remotos (tiempo real)
+    function pullFromFirestore(snapshot) {
+        if (!snapshot.exists || isSyncing) return;
+        
+        const remoteData = snapshot.data();
+        if (!remoteData) return;
+        
+        // Evitar refrescar si es la primera carga (ya tenemos los datos)
+        if (isFirstLoad) {
+            isFirstLoad = false;
+            return;
+        }
+        
+        // Verificar si realmente hay cambios
+        if (JSON.stringify(remoteData) !== JSON.stringify(db)) {
+            db = remoteData;
+            // Refrescar toda la UI
+            initUI();
+            renderCalendar();
+            updateBalances();
+            renderLedger();
+            if (currentEditDate) renderDayLogs(currentEditDate, editMode);
+            updateSyncStatus('Sincronizado');
+        }
+    }
+
     // ── ESTADO GLOBAL ──────────────────────────────────────────
     let db = {
-        config: { company: "NEBULA SYSTEMS", user: "ADMIN", logo: "", rate: 100, theme: "#0a0a0a" },
+        config: { company: "NEBULA SYSTEMS", user: "ADMIN", logo: "", rate: 100, themeId: "nebula" },
         sessions: [],
         finance: []
     };
@@ -1150,24 +1223,25 @@
 
     // ── INIT ───────────────────────────────────────────────────
     window.onload = async () => {
-        // Mostrar indicador de carga
         document.body.style.opacity = '0.6';
         try {
             const snap = await NEBULA_DOC.get();
             if (snap.exists) {
                 db = snap.data();
             } else {
-                // Primera vez: intentar migrar datos locales existentes
                 const saved = localStorage.getItem('nebula_corp_db');
                 if (saved) {
                     db = JSON.parse(saved);
-                    await NEBULA_DOC.set(db); // migrar a Firestore
+                    await NEBULA_DOC.set(db);
                 }
             }
+            // Escuchar cambios en tiempo real
+            NEBULA_DOC.onSnapshot(pullFromFirestore);
         } catch(e) {
             console.warn('Firestore no disponible, usando datos locales:', e);
             const saved = localStorage.getItem('nebula_corp_db');
             if (saved) db = JSON.parse(saved);
+            updateSyncStatus('Offline', true);
         }
         document.body.style.opacity = '1';
         initUI();
@@ -1255,21 +1329,11 @@
     }
 
     function applyTheme(themeId) {
-        // Quitar todas las clases de tema previas
         THEMES.forEach(t => document.body.classList.remove('theme-' + t.id));
         if (themeId !== 'nebula') document.body.classList.add('theme-' + themeId);
 
         db.config.themeId = themeId;
-        // Guardar en Firestore + localStorage como respaldo
-        NEBULA_DOC.set(db).catch(() => localStorage.setItem('nebula_corp_db', JSON.stringify(db)));
-        localStorage.setItem('nebula_corp_db', JSON.stringify(db));
-
-        // Actualizar selección visual en el grid
-        document.querySelectorAll('.theme-card').forEach((card, i) => {
-            const isSelected = THEMES[i].id === themeId;
-            card.classList.toggle('selected', isSelected);
-            card.style.borderColor = isSelected ? '#ffffff' : THEMES[i].preview.accent;
-        });
+        saveAndRefresh();
     }
 
     function initUI() {
@@ -1278,9 +1342,8 @@
         document.getElementById('cfg-comp').value = db.config.company;
         document.getElementById('cfg-user').value = db.config.user;
         document.getElementById('cfg-rate').value = db.config.rate;
-        document.getElementById('cfg-logo').value = db.config.logo;
+        document.getElementById('cfg-logo').value = db.config.logo || '';
 
-        // Aplicar tema guardado
         const themeId = db.config.themeId || 'nebula';
         THEMES.forEach(t => document.body.classList.remove('theme-' + t.id));
         if (themeId !== 'nebula') document.body.classList.add('theme-' + themeId);
@@ -1294,7 +1357,6 @@
         document.getElementById('digital-clock').innerText = new Date().toLocaleTimeString();
     }
 
-    // ── MODO DE TIEMPO (Libre / Hasta hora) ───────────────────
     function setTimeMode(mode) {
         currentTimeMode = mode;
         document.getElementById('tab-libre').classList.toggle('active', mode === 'libre');
@@ -1304,7 +1366,6 @@
         document.getElementById('tiempo-restante-row').style.flexDirection = 'column';
     }
 
-    // ── LÓGICA DE TIEMPO ──────────────────────────────────────
     function validateAndStart() {
         const sector = document.getElementById('work-sector').value;
         const desc = document.getElementById('work-desc').value;
@@ -1320,20 +1381,13 @@
                 alert("⚠️ Debe definir una duración mayor a 0.");
                 return;
             }
-            // limitTimestamp = ahora + duración elegida (exacto al ms)
             limitTimestamp = new Date(Date.now() + totalSeg * 1000);
-            // guardar la duración contratada para cobrarla entera
             contractedSec  = totalSeg;
             contractedEarned = (Math.ceil(totalSeg / 60) / 60) * db.config.rate;
         }
         startEngine();
     }
 
-    // ══════════════════════════════════════════════
-    //  SISTEMA DE NOTIFICACIÓN SONORA — 3 PITIDOS
-    //  Compatible con Desktop, iOS y Android
-    //  En Android simula tono de SMS
-    // ══════════════════════════════════════════════
     function playNotificationBeeps() {
         try {
             const AudioCtx = window.AudioContext || window.webkitAudioContext;
@@ -1342,9 +1396,6 @@
             const isAndroid = /Android/i.test(navigator.userAgent);
             const ctx = new AudioCtx();
 
-            // Parámetros según plataforma
-            // Android: frecuencias altas y cortas tipo SMS (1200 → 900 → 1200 Hz)
-            // Desktop/iOS: pitidos clásicos de notificación (880 Hz)
             const beepConfig = isAndroid
                 ? [
                     { freq: 1200, start: 0.00, dur: 0.08, vol: 0.7 },
@@ -1360,26 +1411,18 @@
             beepConfig.forEach(({ freq, start, dur, vol }) => {
                 const osc   = ctx.createOscillator();
                 const gain  = ctx.createGain();
-
                 osc.connect(gain);
                 gain.connect(ctx.destination);
-
-                // Android usa onda sinusoidal (más suave, como SMS)
-                // Desktop usa cuadrada (más nítida)
                 osc.type = isAndroid ? 'sine' : 'square';
                 osc.frequency.setValueAtTime(freq, ctx.currentTime + start);
-
-                // Envolvente: fade-in rápido + fade-out suave
                 gain.gain.setValueAtTime(0, ctx.currentTime + start);
                 gain.gain.linearRampToValueAtTime(vol, ctx.currentTime + start + 0.01);
                 gain.gain.setValueAtTime(vol, ctx.currentTime + start + dur - 0.02);
                 gain.gain.linearRampToValueAtTime(0, ctx.currentTime + start + dur);
-
                 osc.start(ctx.currentTime + start);
                 osc.stop(ctx.currentTime + start + dur + 0.01);
             });
 
-            // Cerrar contexto después del último pitido
             const lastBeep = beepConfig[beepConfig.length - 1];
             setTimeout(() => {
                 ctx.close().catch(() => {});
@@ -1398,7 +1441,6 @@
             document.getElementById('chrono-display').classList.add('timer-mode-active');
             document.getElementById('chrono-label').innerText = 'TRANSCURRIDO';
             document.getElementById('tiempo-restante-row').style.display = 'flex';
-            // Mostrar ganancia contratada
             document.getElementById('dur-cobrada-label').style.display = 'block';
             document.getElementById('dur-cobrada-val').innerText =
                 `$${contractedEarned.toFixed(2)} (${formatHMS(contractedSec)})`;
@@ -1439,12 +1481,10 @@
         let durationSec, durationMin, earned;
 
         if (currentTimeMode === 'hasta' && contractedSec > 0) {
-            // Modo duración: se cobra EXACTAMENTE lo contratado, sin importar si se detuvo antes
             durationSec  = contractedSec;
             durationMin  = Math.ceil(contractedSec / 60);
             earned       = contractedEarned;
         } else {
-            // Modo libre: ceiling como siempre
             const durationMs = endTime - startTime;
             durationSec  = Math.ceil(durationMs / 1000);
             durationMin  = Math.ceil(durationSec / 60);
@@ -1472,9 +1512,7 @@
         resetControlPanel();
 
         if (auto) {
-            // 3 pitidos de notificación al completar el tiempo
             playNotificationBeeps();
-            // Pequeña pausa para que suenen los pitidos antes del alert
             setTimeout(() => {
                 alert(`✅ JORNADA COMPLETADA\nDuración cobrada: ${formatHMS(durationSec)}\nMinutos: ${durationMin} min\nGanado: $${earned.toFixed(2)}`);
             }, 700);
@@ -1504,9 +1542,9 @@
         document.getElementById('tab-hasta').disabled = false;
     }
 
-    // ── CALENDARIO ────────────────────────────────────────────
     function renderCalendar() {
         const body = document.getElementById('calendar-body');
+        if (!body) return;
         body.innerHTML = '';
         const y = viewDate.getFullYear(), m = viewDate.getMonth();
         document.getElementById('calendar-title').innerText =
@@ -1544,7 +1582,6 @@
         }
     }
 
-    // ── DETALLE Y EDICIÓN DE DÍA ──────────────────────────────
     function openDayDetail(date, startEdit) {
         currentEditDate = date;
         editMode = false;
@@ -1562,6 +1599,7 @@
 
     function renderDayLogs(date, editable) {
         const container = document.getElementById('day-logs-render');
+        if (!container) return;
         container.innerHTML = '';
         const logs = db.sessions.filter(s => s.date === date);
 
@@ -1638,8 +1676,6 @@
             const task     = row.querySelector('.edit-task').value;
             const sector   = row.querySelector('.edit-sector').value;
 
-            // Recalcular duración y ganancia
-            const dateBase = db.sessions[idx].date;
             const parseT = (str) => {
                 const parts = str.split(':').map(Number);
                 const d = new Date();
@@ -1648,8 +1684,8 @@
             };
             const s = parseT(startStr), e = parseT(endStr);
             const durMs  = Math.max(0, e - s);
-            const dur    = Math.ceil(durMs / 1000);          // segundos, ceiling
-            const durMin = Math.ceil(dur / 60);              // minutos cobrados, ceiling
+            const dur    = Math.ceil(durMs / 1000);
+            const durMin = Math.ceil(dur / 60);
             const earned = (durMin / 60) * db.config.rate;
 
             db.sessions[idx] = { ...db.sessions[idx], start: startStr, end: endStr, task, sector, duration: dur, durationMin: durMin, earned };
@@ -1670,8 +1706,7 @@
         renderDayLogs(currentEditDate, editMode);
     }
 
-    // ── EDICIÓN DE ENTRADAS DEL LIBRO ─────────────────────────
-    let pendingRetiroData = null; // guarda datos del retiro mientras se confirma
+    let pendingRetiroData = null;
 
     function openLedgerEdit(sourceType, sourceId) {
         document.getElementById('ledger-modal').style.display = 'none';
@@ -1694,7 +1729,6 @@
             document.getElementById('le-end').value     = s.end;
             preview.style.display = 'block';
             document.getElementById('le-preview-earned').innerText = `$${s.earned.toFixed(2)}`;
-            // Live preview al cambiar horas
             ['le-start','le-end'].forEach(id => {
                 document.getElementById(id).oninput = recalcPreview;
             });
@@ -1782,7 +1816,6 @@
         openModal('ledger-modal');
     }
 
-    // ── RETIRO: CONFIRMACIÓN INTELIGENTE ──────────────────────
     function showRetiroModal(data) {
         pendingRetiroData = data;
         const isDebit = data.type === 'deuda' || data.type === 'retiro';
@@ -1790,7 +1823,6 @@
         const signLabel = isDebit ? '↓ RESTA del balance' : '↑ SUMA al balance';
         const signColor = isDebit ? '#ff6688' : '#44ffaa';
 
-        // Calcular saldo actual del sector
         const sec = data.sector;
         const earned = db.sessions.filter(s => s.sector === sec).reduce((a,b) => a + b.earned, 0);
         const restan = db.finance.filter(f => f.sector === sec && (f.type==='deuda'||f.type==='retiro')).reduce((a,b) => a + b.amount, 0);
@@ -1837,6 +1869,7 @@
         document.getElementById('adv-reason').value = '';
         selectFinType('deuda');
     }
+
     const FIN_TYPE_INFO = {
         deuda:        { label: 'ADELANTO / DEUDA',  icon: 'fa-arrow-down',   color: 'var(--danger)',   sign: -1, desc: 'Resta del balance. El empleador otorgó un adelanto o el trabajador quedó en deuda.' },
         pago:         { label: 'PAGO COMPLETO',     icon: 'fa-arrow-up',     color: 'var(--success)',  sign: +1, desc: 'Pago total recibido. Suma al balance y cancela deuda pendiente.' },
@@ -1848,20 +1881,17 @@
         currentFinType = type;
         document.getElementById('adv-type').value = type;
 
-        // Actualizar botones visuales
         document.querySelectorAll('.fin-type-btn').forEach(btn => {
             const t = btn.dataset.type;
             const info = FIN_TYPE_INFO[t];
             const isActive = t === type;
             btn.style.borderColor   = isActive ? info.color : '#444';
-            btn.style.background    = isActive ? `rgba(${hexToRgb(info.color)}, 0.15)` : 'transparent';
+            btn.style.background    = isActive ? `rgba(255,0,85,0.12)` : 'transparent';
             btn.style.color         = isActive ? info.color : '#888';
         });
 
-        // Descripción
         document.getElementById('fin-type-desc').innerText = FIN_TYPE_INFO[type].desc;
 
-        // Para pago parcial: mostrar saldo pendiente del sector seleccionado
         const showSaldo = type === 'pago_parcial';
         document.getElementById('saldo-pendiente-info').style.display = showSaldo ? 'block' : 'none';
         if (showSaldo) updateSaldoPendiente();
@@ -1876,16 +1906,6 @@
         document.getElementById('saldo-pendiente-val').innerText = `$${net.toFixed(2)}`;
     }
 
-    // Función helper: convierte variable CSS a rgb para rgba()
-    function hexToRgb(cssVar) {
-        // Para vars CSS retornamos defaults neutros
-        const map = {
-            'var(--danger)': '255,0,85', 'var(--success)': '0,255,136',
-            'var(--primary)': '0,243,255', 'var(--secondary)': '188,19,254'
-        };
-        return map[cssVar] || '255,255,255';
-    }
-
     function commitFinance() {
         const type   = document.getElementById('adv-type').value || 'deuda';
         const sector = document.getElementById('adv-sector').value;
@@ -1895,7 +1915,6 @@
         if (!amount || amount <= 0) { alert("Ingrese un monto válido mayor a 0."); return; }
         if (!reason.trim()) { alert("Ingrese un motivo o concepto."); return; }
 
-        // Siempre mostrar resumen + pregunta de retiro antes de guardar
         closeModals();
         showRetiroModal({ type, sector, amount, reason });
     }
@@ -1903,14 +1922,13 @@
     function updateBalances() {
         const container = document.getElementById('balances-render');
         const history   = document.getElementById('history-log');
+        if (!container) return;
         container.innerHTML = '';
         history.innerHTML   = '';
 
         ['Interno','Externo','Especial'].forEach(sec => {
             const earned = db.sessions.filter(s => s.sector === sec).reduce((a,b) => a + b.earned, 0);
-            // Restan: deuda + retiro
             const restan = db.finance.filter(f => f.sector === sec && (f.type === 'deuda' || f.type === 'retiro')).reduce((a,b) => a + b.amount, 0);
-            // Suman: pago + pago_parcial
             const suman  = db.finance.filter(f => f.sector === sec && (f.type === 'pago' || f.type === 'pago_parcial')).reduce((a,b) => a + b.amount, 0);
             const net    = earned + suman - restan;
 
@@ -1944,16 +1962,16 @@
         });
     }
 
-    // ── LIBRO CONTABLE ────────────────────────────────────────
     function renderLedger() {
-        const sectorFilter = document.getElementById('ledger-filter-sector').value;
-        const fromFilter   = document.getElementById('ledger-filter-from').value;
-        const toFilter     = document.getElementById('ledger-filter-to').value;
+        const sectorFilter = document.getElementById('ledger-filter-sector')?.value || 'all';
+        const fromFilter   = document.getElementById('ledger-filter-from')?.value || '';
+        const toFilter     = document.getElementById('ledger-filter-to')?.value || '';
 
-        document.getElementById('ledger-title-company').innerText = db.config.company;
-        document.getElementById('ledger-generated').innerText = `GENERADO: ${new Date().toLocaleDateString('es-ES')}`;
+        const companyEl = document.getElementById('ledger-title-company');
+        if (companyEl) companyEl.innerText = db.config.company;
+        const generatedEl = document.getElementById('ledger-generated');
+        if (generatedEl) generatedEl.innerText = `GENERADO: ${new Date().toLocaleDateString('es-ES')}`;
 
-        // Construir líneas del diario (sesiones + finanzas)
         let entries = [];
 
         db.sessions.forEach(s => {
@@ -1963,7 +1981,6 @@
                 sector: s.sector,
                 debit: 0,
                 credit: s.earned,
-                type: 'session',
                 sourceType: 'session',
                 sourceId: String(s.id)
             });
@@ -1980,31 +1997,28 @@
                 sector: f.sector,
                 debit:  isDebit ? f.amount : 0,
                 credit: !isDebit ? f.amount : 0,
-                type: 'finance',
-                finType: f.type,
                 sourceType: 'finance',
                 sourceId: String(idx)
             });
         });
 
-        // Filtros
         if (sectorFilter !== 'all') entries = entries.filter(e => e.sector === sectorFilter);
         if (fromFilter) entries = entries.filter(e => e.date >= fromFilter);
         if (toFilter)   entries = entries.filter(e => e.date <= toFilter);
 
-        // Ordenar por fecha
         entries.sort((a,b) => a.date.localeCompare(b.date));
 
-        // Rango de fechas para cabecera
-        if (entries.length) {
-            document.getElementById('ledger-date-range').innerText =
-                `${entries[0].date} al ${entries[entries.length-1].date}`;
-        } else {
-            document.getElementById('ledger-date-range').innerText = 'Sin registros';
+        const dateRangeEl = document.getElementById('ledger-date-range');
+        if (dateRangeEl) {
+            if (entries.length) {
+                dateRangeEl.innerText = `${entries[0].date} al ${entries[entries.length-1].date}`;
+            } else {
+                dateRangeEl.innerText = 'Sin registros';
+            }
         }
 
-        // Construir tabla con saldo acumulado
         const tbody = document.getElementById('ledger-rows');
+        if (!tbody) return;
         tbody.innerHTML = '';
         let runningBalance = 0, totalDebit = 0, totalCredit = 0;
 
@@ -2016,11 +2030,11 @@
             const balColor = runningBalance < 0 ? '#ff6688' : runningBalance === 0 ? '#00f3ff' : '#44ffaa';
             const tr = document.createElement('tr');
             tr.innerHTML = `
-                <td style="white-space:nowrap; color:#e8e8e8 !important;">${e.date}</td>
-                <td style="color:#e8e8e8 !important;">${e.concept}</td>
-                <td style="text-align:center; color:#cccccc !important;">${e.sector}</td>
-                <td class="ledger-debit">${e.debit > 0 ? '$'+e.debit.toFixed(2) : '<span style="color:#555">—</span>'}</td>
-                <td class="ledger-credit">${e.credit > 0 ? '$'+e.credit.toFixed(2) : '<span style="color:#555">—</span>'}</td>
+                <td style="white-space:nowrap;">${e.date}</td>
+                <td>${e.concept}</td>
+                <td style="text-align:center;">${e.sector}</td>
+                <td class="ledger-debit">${e.debit > 0 ? '$'+e.debit.toFixed(2) : '—'}</td>
+                <td class="ledger-credit">${e.credit > 0 ? '$'+e.credit.toFixed(2) : '—'}</td>
                 <td class="ledger-balance" style="color:${balColor};">
                     ${runningBalance === 0 ? '✅ ' : ''}$${runningBalance.toFixed(2)}
                 </td>
@@ -2033,52 +2047,51 @@
             tbody.appendChild(tr);
         });
 
-        // Fila totales
         const totalRow = document.createElement('tr');
         totalRow.className = 'ledger-total-row';
         const totalNet = totalCredit - totalDebit;
         const totalColor = totalNet < 0 ? '#ff6688' : totalNet === 0 ? '#00f3ff' : '#44ffaa';
         totalRow.innerHTML = `
-            <td colspan="3" style="font-family:'Orbitron'; font-size:0.8rem; color:var(--primary) !important;">TOTALES</td>
+            <td colspan="3" style="font-family:'Orbitron'; font-size:0.8rem; color:var(--primary);">TOTALES</td>
             <td class="ledger-debit" style="font-size:1rem;">$${totalDebit.toFixed(2)}</td>
             <td class="ledger-credit" style="font-size:1rem;">$${totalCredit.toFixed(2)}</td>
-            <td class="ledger-balance" style="font-size:1.1rem; color:${totalColor} !important;">
+            <td class="ledger-balance" style="font-size:1.1rem; color:${totalColor};">
                 ${totalNet === 0 ? '✅ ' : ''}$${totalNet.toFixed(2)}
             </td>
             <td class="no-print"></td>
         `;
         tbody.appendChild(totalRow);
 
-        // Resumen por sector
         const summary = document.getElementById('ledger-summary');
-        summary.innerHTML = '';
-        ['Interno','Externo','Especial'].forEach(sec => {
-            const sEarned  = db.sessions.filter(s => s.sector===sec).reduce((a,b)=>a+b.earned,0);
-            const sRestan  = db.finance.filter(f => f.sector===sec && (f.type==='deuda'||f.type==='retiro')).reduce((a,b)=>a+b.amount,0);
-            const sSuman   = db.finance.filter(f => f.sector===sec && (f.type==='pago'||f.type==='pago_parcial')).reduce((a,b)=>a+b.amount,0);
-            const sDeudas  = db.finance.filter(f => f.sector===sec && f.type==='deuda').reduce((a,b)=>a+b.amount,0);
-            const sRetiros = db.finance.filter(f => f.sector===sec && f.type==='retiro').reduce((a,b)=>a+b.amount,0);
-            const sPagoC   = db.finance.filter(f => f.sector===sec && f.type==='pago').reduce((a,b)=>a+b.amount,0);
-            const sPagoP   = db.finance.filter(f => f.sector===sec && f.type==='pago_parcial').reduce((a,b)=>a+b.amount,0);
-            const sNet     = sEarned + sSuman - sRestan;
+        if (summary) {
+            summary.innerHTML = '';
+            ['Interno','Externo','Especial'].forEach(sec => {
+                const sEarned  = db.sessions.filter(s => s.sector===sec).reduce((a,b)=>a+b.earned,0);
+                const sRestan  = db.finance.filter(f => f.sector===sec && (f.type==='deuda'||f.type==='retiro')).reduce((a,b)=>a+b.amount,0);
+                const sSuman   = db.finance.filter(f => f.sector===sec && (f.type==='pago'||f.type==='pago_parcial')).reduce((a,b)=>a+b.amount,0);
+                const sDeudas  = db.finance.filter(f => f.sector===sec && f.type==='deuda').reduce((a,b)=>a+b.amount,0);
+                const sRetiros = db.finance.filter(f => f.sector===sec && f.type==='retiro').reduce((a,b)=>a+b.amount,0);
+                const sPagoC   = db.finance.filter(f => f.sector===sec && f.type==='pago').reduce((a,b)=>a+b.amount,0);
+                const sPagoP   = db.finance.filter(f => f.sector===sec && f.type==='pago_parcial').reduce((a,b)=>a+b.amount,0);
+                const sNet     = sEarned + sSuman - sRestan;
 
-            summary.innerHTML += `
-                <div style="border:1px solid var(--border); border-radius:10px; padding:15px; text-align:center;">
-                    <div style="font-family:'Orbitron'; font-size:0.8rem; color:var(--text-dim); margin-bottom:5px;">${sec.toUpperCase()}</div>
-                    <div style="font-size:0.78rem;">Horas trabajadas: <span style="color:var(--success)">+$${sEarned.toFixed(2)}</span></div>
-                    <div style="font-size:0.78rem;">Adelantos: <span style="color:var(--danger)">-$${sDeudas.toFixed(2)}</span></div>
-                    <div style="font-size:0.78rem;">Retiros: <span style="color:var(--secondary)">-$${sRetiros.toFixed(2)}</span></div>
-                    <div style="font-size:0.78rem;">Pago completo: <span style="color:var(--success)">+$${sPagoC.toFixed(2)}</span></div>
-                    <div style="font-size:0.78rem;">Pago parcial: <span style="color:var(--primary)">+$${sPagoP.toFixed(2)}</span></div>
-                    <div style="border-top:1px solid #333; margin-top:8px; padding-top:8px; font-family:'Orbitron'; font-size:1.1rem; color:${sNet<0?'var(--danger)':'var(--success)'}">
-                        $${sNet.toFixed(2)}
+                summary.innerHTML += `
+                    <div style="border:1px solid var(--border); border-radius:10px; padding:15px; text-align:center;">
+                        <div style="font-family:'Orbitron'; font-size:0.8rem; color:var(--text-dim); margin-bottom:5px;">${sec.toUpperCase()}</div>
+                        <div style="font-size:0.78rem;">Horas trabajadas: <span style="color:var(--success)">+$${sEarned.toFixed(2)}</span></div>
+                        <div style="font-size:0.78rem;">Adelantos: <span style="color:var(--danger)">-$${sDeudas.toFixed(2)}</span></div>
+                        <div style="font-size:0.78rem;">Retiros: <span style="color:var(--secondary)">-$${sRetiros.toFixed(2)}</span></div>
+                        <div style="font-size:0.78rem;">Pago completo: <span style="color:var(--success)">+$${sPagoC.toFixed(2)}</span></div>
+                        <div style="font-size:0.78rem;">Pago parcial: <span style="color:var(--primary)">+$${sPagoP.toFixed(2)}</span></div>
+                        <div style="border-top:1px solid #333; margin-top:8px; padding-top:8px; font-family:'Orbitron'; font-size:1.1rem; color:${sNet<0?'var(--danger)':'var(--success)'}">
+                            $${sNet.toFixed(2)}
+                        </div>
                     </div>
-                </div>
-            `;
-        });
+                `;
+            });
+        }
     }
 
-    // ── IMPRIMIR / CAPTURAR ───────────────────────────────────
     function printLedger() {
         window.print();
     }
@@ -2100,23 +2113,22 @@
             link.href = canvas.toDataURL('image/png');
             link.click();
 
-            status.style.display = 'block';
-            setTimeout(() => status.style.display = 'none', 4000);
+            if (status) {
+                status.style.display = 'block';
+                setTimeout(() => status.style.display = 'none', 4000);
+            }
         } catch(e) {
             alert('Error al generar imagen. Intente con el botón IMPRIMIR.');
         }
     }
 
-    // ── UTILIDADES ────────────────────────────────────────────
     function saveAndRefresh() {
-        // Guardar en Firestore (principal) + localStorage (respaldo offline)
-        NEBULA_DOC.set(db).catch(e => {
-            console.warn('Error Firestore, guardando solo local:', e);
-        });
+        pushToFirestore();
         localStorage.setItem('nebula_corp_db', JSON.stringify(db));
         renderCalendar();
         updateBalances();
         initUI();
+        renderLedger();
     }
 
     function saveConfig() {
@@ -2124,9 +2136,9 @@
         db.config.user    = document.getElementById('cfg-user').value;
         db.config.rate    = parseFloat(document.getElementById('cfg-rate').value);
         db.config.logo    = document.getElementById('cfg-logo').value;
-        // themeId ya se guarda en applyTheme()
         saveAndRefresh();
         closeModals();
+        alert('✅ Configuración guardada y sincronizada');
     }
 
     function formatHMS(s) {
@@ -2142,7 +2154,6 @@
         if (id === 'config-modal')  buildThemeGrid();
         if (id === 'advance-modal') {
             selectFinType('deuda');
-            // listener para actualizar saldo pendiente al cambiar sector
             document.getElementById('adv-sector').onchange = () => {
                 if (currentFinType === 'pago_parcial') updateSaldoPendiente();
             };
