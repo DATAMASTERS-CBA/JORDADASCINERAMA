@@ -1161,6 +1161,21 @@
         }
     }
 
+    // ── POLLING ────────────────────────────────────────────────
+    // Consulta Firestore cada 3 segundos para detectar cambios remotos
+    function startPolling(intervalMs = 3000) {
+        setInterval(async () => {
+            if (isSyncing) return;
+            try {
+                const snap = await NEBULA_DOC.get();
+                pullFromFirestore(snap);
+            } catch(e) {
+                console.warn('Error en polling:', e);
+                updateSyncStatus('Error sync', true);
+            }
+        }, intervalMs);
+    }
+
     // Subir datos a Firestore
     async function pushToFirestore() {
         if (isSyncing) return;
@@ -1235,8 +1250,8 @@
                     await NEBULA_DOC.set(db);
                 }
             }
-            // Escuchar cambios en tiempo real
-            NEBULA_DOC.onSnapshot(pullFromFirestore);
+            // Polling: consultar Firestore cada 3 segundos en vez de onSnapshot
+            startPolling();
         } catch(e) {
             console.warn('Firestore no disponible, usando datos locales:', e);
             const saved = localStorage.getItem('nebula_corp_db');
