@@ -3,18 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEBULA | Gestión Laboral de Alta Precisión (Tiempo Real)</title>
+    <title>NEBULA | Gestión Laboral (Tiempo Real con Indicador)</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Roboto+Mono:wght@300;400;700&family=VT323&family=Press+Start+2P&family=Share+Tech+Mono&family=IBM+Plex+Mono:wght@400;700&family=Courier+Prime:wght@400;700&family=Special+Elite&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
     <style>
-
-    /* ══════════════════════════════════════════════
-       TEMA BASE (NEBULA — por defecto)
-    ══════════════════════════════════════════════ */
     :root {
         --primary: #00f3ff; --secondary: #bc13fe; --bg: #0a0a0a;
         --glass: rgba(15,15,15,0.85); --border: rgba(0,243,255,0.3);
@@ -30,9 +25,6 @@
         --card-border-w: 2px;
     }
 
-    /* ══════════════════════════════════════════════
-       TEMA: MS-DOS
-    ══════════════════════════════════════════════ */
     body.theme-msdos {
         --primary: #aaaaaa; --secondary: #ffffff; --bg: #000000;
         --glass: #000000; --border: #aaaaaa;
@@ -49,15 +41,8 @@
         font-size: 18px;
     }
     body.theme-msdos .glass-card { backdrop-filter: none; }
-    body.theme-msdos h1, body.theme-msdos h2, body.theme-msdos h3 {
-        letter-spacing: 0; text-transform: uppercase;
-    }
-    body.theme-msdos .neon-btn:hover { box-shadow: none; }
     body.theme-msdos * { border-radius: 0 !important; }
 
-    /* ══════════════════════════════════════════════
-       TEMA: COMMODORE 64
-    ══════════════════════════════════════════════ */
     body.theme-commodore {
         --primary: #7b70e8; --secondary: #a09fe8;
         --bg: #4040a0; --glass: rgba(40,40,140,0.95);
@@ -75,325 +60,7 @@
         font-size: 18px;
     }
     body.theme-commodore * { border-radius: 0 !important; }
-    body.theme-commodore .glass-card { backdrop-filter: none; }
-    body.theme-commodore .neon-btn:hover { box-shadow: none; }
 
-    /* ══════════════════════════════════════════════
-       TEMA: WINDOWS 3.1
-    ══════════════════════════════════════════════ */
-    body.theme-win31 {
-        --primary: #000080; --secondary: #000080;
-        --bg: #008080; --glass: #c0c0c0;
-        --border: #808080;
-        --danger: #ff0000; --success: #000080;
-        --text-main: #000000; --text-dim: #444444;
-        --font-body: 'Courier Prime', monospace;
-        --font-head: 'Courier Prime', monospace;
-        --radius: 0px; --radius-btn: 0px;
-        --header-bg: #000080;
-        --btn-hover-color: #c0c0c0;
-        --input-bg: #ffffff;
-        --shadow: 2px 2px 0 #808080, -1px -1px 0 #ffffff;
-        --card-border-w: 2px;
-    }
-    body.theme-win31 * { border-radius: 0 !important; }
-    body.theme-win31 .glass-card {
-        backdrop-filter: none;
-        border-top: 2px solid #ffffff !important;
-        border-left: 2px solid #ffffff !important;
-        border-right: 2px solid #404040 !important;
-        border-bottom: 2px solid #404040 !important;
-    }
-    body.theme-win31 header {
-        background: #000080 !important;
-        border-bottom: 2px solid #808080 !important;
-    }
-    body.theme-win31 h1, body.theme-win31 h2, body.theme-win31 h3 {
-        color: #ffffff !important;
-        text-shadow: none !important; letter-spacing: 0;
-    }
-    body.theme-win31 header h1 { color: #ffffff !important; }
-    body.theme-win31 .neon-btn {
-        border-top: 2px solid #ffffff !important;
-        border-left: 2px solid #ffffff !important;
-        border-right: 2px solid #404040 !important;
-        border-bottom: 2px solid #404040 !important;
-        color: #000000 !important; background: #c0c0c0 !important;
-    }
-    body.theme-win31 .neon-btn:hover {
-        background: #000080 !important; color: #ffffff !important;
-        box-shadow: none !important;
-    }
-    body.theme-win31 label { color: #000000 !important; }
-    body.theme-win31 input, body.theme-win31 select, body.theme-win31 textarea {
-        background: #ffffff !important; color: #000000 !important;
-        border: 2px inset #808080 !important;
-    }
-    body.theme-win31 .bttf-val { color: #000080 !important; text-shadow: none !important; }
-    body.theme-win31 .day { background: #d4d0c8 !important; border: 1px solid #808080 !important; }
-    body.theme-win31 .day-num { color: #000000 !important; opacity: 0.7 !important; }
-    body.theme-win31 p, body.theme-win31 span, body.theme-win31 div { color: inherit; }
-
-    /* ══════════════════════════════════════════════
-       TEMA: WINDOWS 95
-    ══════════════════════════════════════════════ */
-    body.theme-win95 {
-        --primary: #000080; --secondary: #008080;
-        --bg: #008080; --glass: #c0c0c0;
-        --border: #808080;
-        --danger: #ff0000; --success: #008000;
-        --text-main: #000000; --text-dim: #444444;
-        --font-body: 'IBM Plex Mono', monospace;
-        --font-head: 'IBM Plex Mono', monospace;
-        --radius: 0px; --radius-btn: 0px;
-        --header-bg: #000080;
-        --btn-hover-color: #000080;
-        --input-bg: #ffffff;
-        --shadow: 2px 2px 0 #404040;
-        --card-border-w: 2px;
-    }
-    body.theme-win95 * { border-radius: 0 !important; }
-    body.theme-win95 .glass-card {
-        backdrop-filter: none; background: #c0c0c0 !important;
-        border-top: 2px solid #ffffff !important;
-        border-left: 2px solid #ffffff !important;
-        border-right: 2px solid #404040 !important;
-        border-bottom: 2px solid #404040 !important;
-        box-shadow: 1px 1px 0 #000 !important;
-    }
-    body.theme-win95 header { background: #000080 !important; border-bottom: 3px solid #404040 !important; }
-    body.theme-win95 h1, body.theme-win95 h2, body.theme-win95 h3 {
-        color: #ffffff !important; text-shadow: none !important; letter-spacing: 1px;
-    }
-    body.theme-win95 header h1 { color: #ffffff !important; }
-    body.theme-win95 .neon-btn {
-        background: #c0c0c0 !important; color: #000000 !important;
-        border-top: 2px solid #ffffff !important;
-        border-left: 2px solid #ffffff !important;
-        border-right: 2px solid #404040 !important;
-        border-bottom: 2px solid #404040 !important;
-        font-family: 'IBM Plex Mono', monospace !important;
-    }
-    body.theme-win95 .neon-btn:hover {
-        background: #000080 !important; color: #ffffff !important; box-shadow: none !important;
-    }
-    body.theme-win95 label { color: #000000 !important; }
-    body.theme-win95 input, body.theme-win95 select, body.theme-win95 textarea {
-        background: #ffffff !important; color: #000000 !important;
-        border: 2px inset #808080 !important;
-    }
-    body.theme-win95 .bttf-val { color: #000080 !important; text-shadow: none !important; }
-    body.theme-win95 .day { background: #d4d0c8 !important; border: 1px solid #808080 !important; }
-    body.theme-win95 .day-num { color: #000000 !important; opacity: 0.8 !important; }
-
-    /* ══════════════════════════════════════════════
-       TEMA: WINDOWS 98
-    ══════════════════════════════════════════════ */
-    body.theme-win98 {
-        --primary: #1c5fa5; --secondary: #225ea0;
-        --bg: #3a6ea5; --glass: #d4d0c8;
-        --border: #9090a0;
-        --danger: #cc0000; --success: #006400;
-        --text-main: #000000; --text-dim: #555555;
-        --font-body: 'IBM Plex Mono', monospace;
-        --font-head: 'IBM Plex Mono', monospace;
-        --radius: 2px; --radius-btn: 2px;
-        --header-bg: linear-gradient(to right, #1c5fa5, #3a87d4);
-        --btn-hover-color: #1c5fa5;
-        --input-bg: #ffffff;
-        --shadow: 2px 2px 4px rgba(0,0,0,0.4);
-        --card-border-w: 2px;
-    }
-    body.theme-win98 .glass-card {
-        backdrop-filter: none; background: #d4d0c8 !important;
-        border-top: 2px solid #ffffff !important;
-        border-left: 2px solid #ffffff !important;
-        border-right: 2px solid #666 !important;
-        border-bottom: 2px solid #666 !important;
-    }
-    body.theme-win98 header {
-        background: linear-gradient(to right, #1c5fa5, #3a87d4) !important;
-        border-bottom: 3px solid #0a3870 !important;
-    }
-    body.theme-win98 h1, body.theme-win98 h2, body.theme-win98 h3 {
-        color: #ffffff !important; text-shadow: 1px 1px 2px #000 !important; letter-spacing: 1px;
-    }
-    body.theme-win98 .neon-btn {
-        background: #d4d0c8 !important; color: #000000 !important;
-        border-top: 2px solid #ffffff !important;
-        border-left: 2px solid #ffffff !important;
-        border-right: 2px solid #404040 !important;
-        border-bottom: 2px solid #404040 !important;
-        font-family: 'IBM Plex Mono', monospace !important;
-    }
-    body.theme-win98 .neon-btn:hover {
-        background: #1c5fa5 !important; color: #ffffff !important; box-shadow: none !important;
-    }
-    body.theme-win98 label { color: #000080 !important; }
-    body.theme-win98 input, body.theme-win98 select, body.theme-win98 textarea {
-        background: #ffffff !important; color: #000000 !important;
-        border: 2px inset #9090a0 !important;
-    }
-    body.theme-win98 .bttf-val { color: #1c5fa5 !important; text-shadow: none !important; }
-    body.theme-win98 .day { background: #e8e4da !important; border: 1px solid #9090a0 !important; }
-    body.theme-win98 .day-num { color: #000000 !important; opacity: 0.7 !important; }
-
-    /* ══════════════════════════════════════════════
-       TEMA: WINDOWS ME
-    ══════════════════════════════════════════════ */
-    body.theme-winme {
-        --primary: #2e6bc7; --secondary: #5090e0;
-        --bg: #244f96; --glass: #dce5f5;
-        --border: #6090d0;
-        --danger: #cc2200; --success: #006600;
-        --text-main: #000000; --text-dim: #445566;
-        --font-body: 'IBM Plex Mono', monospace;
-        --font-head: 'IBM Plex Mono', monospace;
-        --radius: 4px; --radius-btn: 4px;
-        --header-bg: linear-gradient(135deg, #2e6bc7 0%, #5aabff 50%, #2e6bc7 100%);
-        --btn-hover-color: #2e6bc7;
-        --input-bg: #ffffff;
-        --shadow: 0 2px 6px rgba(0,0,80,0.4);
-        --card-border-w: 1px;
-    }
-    body.theme-winme .glass-card {
-        backdrop-filter: none; background: #dce5f5 !important;
-        border: 1px solid #6090d0 !important;
-        box-shadow: 0 2px 6px rgba(0,0,80,0.3) !important;
-    }
-    body.theme-winme header {
-        background: linear-gradient(135deg, #2e6bc7, #5aabff, #2e6bc7) !important;
-        border-bottom: 3px solid #1a3a8a !important;
-    }
-    body.theme-winme h1, body.theme-winme h2, body.theme-winme h3 {
-        color: #ffffff !important; text-shadow: 0 1px 3px rgba(0,0,0,0.5) !important;
-    }
-    body.theme-winme .neon-btn {
-        background: linear-gradient(to bottom, #e8f0ff, #c8d8f0) !important;
-        color: #000033 !important; border: 1px solid #6090d0 !important;
-        font-family: 'IBM Plex Mono', monospace !important;
-    }
-    body.theme-winme .neon-btn:hover {
-        background: linear-gradient(to bottom, #2e6bc7, #5090e0) !important;
-        color: #ffffff !important; box-shadow: none !important;
-    }
-    body.theme-winme label { color: #1a3a8a !important; }
-    body.theme-winme input, body.theme-winme select, body.theme-winme textarea {
-        background: #ffffff !important; color: #000000 !important;
-        border: 1px solid #6090d0 !important;
-    }
-    body.theme-winme .bttf-val { color: #2e6bc7 !important; text-shadow: none !important; }
-    body.theme-winme .day { background: #e8f0ff !important; border: 1px solid #aac0e0 !important; }
-    body.theme-winme .day-num { color: #000033 !important; opacity: 0.6 !important; }
-
-    /* ══════════════════════════════════════════════
-       TEMA: WINDOWS XP
-    ══════════════════════════════════════════════ */
-    body.theme-winxp {
-        --primary: #245edb; --secondary: #ff8c00;
-        --bg: #236b24; --glass: rgba(220,235,255,0.97);
-        --border: #245edb;
-        --danger: #cc0000; --success: #008000;
-        --text-main: #000000; --text-dim: #334466;
-        --font-body: 'IBM Plex Mono', monospace;
-        --font-head: 'IBM Plex Mono', monospace;
-        --radius: 6px; --radius-btn: 4px;
-        --header-bg: linear-gradient(to bottom, #1e5bd6 0%, #3a8ae8 40%, #1a50c8 100%);
-        --btn-hover-color: #ffffff;
-        --input-bg: #ffffff;
-        --shadow: 0 3px 8px rgba(0,0,100,0.3);
-        --card-border-w: 1px;
-    }
-    body.theme-winxp .glass-card {
-        backdrop-filter: none; background: rgba(220,235,255,0.97) !important;
-        border: 1px solid #245edb !important;
-        box-shadow: 0 3px 8px rgba(0,0,100,0.2) !important;
-    }
-    body.theme-winxp header {
-        background: linear-gradient(to bottom, #1e5bd6, #3a8ae8, #1a50c8) !important;
-        border-bottom: 3px solid #ff8c00 !important;
-    }
-    body.theme-winxp h1, body.theme-winxp h2, body.theme-winxp h3 {
-        color: #ffffff !important; text-shadow: 0 1px 2px rgba(0,0,0,0.6) !important;
-    }
-    body.theme-winxp .neon-btn {
-        background: linear-gradient(to bottom, #f0f8ff, #c8dcf8, #a8c8f0) !important;
-        color: #000033 !important; border: 1px solid #245edb !important;
-        font-family: 'IBM Plex Mono', monospace !important;
-        box-shadow: 0 1px 3px rgba(0,0,150,0.3) !important;
-    }
-    body.theme-winxp .neon-btn:hover {
-        background: linear-gradient(to bottom, #ff8c00, #ffa830) !important;
-        color: #ffffff !important; border-color: #cc5500 !important;
-        box-shadow: 0 2px 6px rgba(200,80,0,0.5) !important;
-    }
-    body.theme-winxp label { color: #1a3a8a !important; font-weight: bold; }
-    body.theme-winxp input, body.theme-winxp select, body.theme-winxp textarea {
-        background: #ffffff !important; color: #000000 !important;
-        border: 2px solid #7aa0d4 !important;
-    }
-    body.theme-winxp .bttf-val { color: #245edb !important; text-shadow: none !important; }
-    body.theme-winxp .day { background: #e8f0ff !important; border: 1px solid #aac0e0 !important; }
-    body.theme-winxp .day-num { color: #000033 !important; opacity: 0.6 !important; }
-
-    /* ══════════════════════════════════════════════
-       TEMA: MAC OS (Aqua/Classic)
-    ══════════════════════════════════════════════ */
-    body.theme-mac {
-        --primary: #0070d8; --secondary: #00a8e8;
-        --bg: #e8e8e8; --glass: rgba(255,255,255,0.88);
-        --border: rgba(0,112,216,0.35);
-        --danger: #e8000c; --success: #28a800;
-        --text-main: #1a1a1a; --text-dim: #666666;
-        --font-body: 'Share Tech Mono', monospace;
-        --font-head: 'Share Tech Mono', monospace;
-        --radius: 12px; --radius-btn: 20px;
-        --header-bg: linear-gradient(to bottom, #e0e0e0, #c8c8c8);
-        --btn-hover-color: #ffffff;
-        --input-bg: #ffffff;
-        --shadow: 0 4px 16px rgba(0,0,0,0.15);
-        --card-border-w: 1px;
-    }
-    body.theme-mac .glass-card {
-        background: rgba(255,255,255,0.88) !important;
-        backdrop-filter: blur(20px) saturate(180%);
-        border: 1px solid rgba(200,200,200,0.8) !important;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.9) !important;
-    }
-    body.theme-mac header {
-        background: linear-gradient(to bottom, #f0f0f0, #d8d8d8) !important;
-        border-bottom: 1px solid #b0b0b0 !important;
-    }
-    body.theme-mac h1, body.theme-mac h2, body.theme-mac h3 {
-        color: #1a1a1a !important; text-shadow: 0 1px 0 rgba(255,255,255,0.8) !important;
-        letter-spacing: 0.5px;
-    }
-    body.theme-mac #digital-clock { color: #0070d8 !important; }
-    body.theme-mac .neon-btn {
-        background: linear-gradient(to bottom, #6ab8ff, #0070d8) !important;
-        color: #ffffff !important; border: none !important;
-        box-shadow: 0 2px 6px rgba(0,112,216,0.5), inset 0 1px 0 rgba(255,255,255,0.3) !important;
-        font-family: 'Share Tech Mono', monospace !important;
-    }
-    body.theme-mac .neon-btn:hover {
-        background: linear-gradient(to bottom, #88ccff, #0088ff) !important;
-        box-shadow: 0 3px 10px rgba(0,112,216,0.6) !important;
-    }
-    body.theme-mac label { color: #0070d8 !important; }
-    body.theme-mac input, body.theme-mac select, body.theme-mac textarea {
-        background: #ffffff !important; color: #1a1a1a !important;
-        border: 1px solid #b0c8e8 !important;
-        box-shadow: inset 0 1px 3px rgba(0,0,0,0.1) !important;
-    }
-    body.theme-mac .bttf-val { color: #0070d8 !important; text-shadow: none !important; }
-    body.theme-mac .day { background: rgba(255,255,255,0.7) !important; border: 1px solid #ccd8ee !important; }
-    body.theme-mac .day-num { color: #1a1a1a !important; opacity: 0.5 !important; }
-    body.theme-mac .day:hover { background: rgba(0,112,216,0.1) !important; }
-    body.theme-mac .modal { background: rgba(0,0,0,0.5) !important; }
-
-    /* ══════════════════════════════════════════════
-       TEMA: LINUX (Terminal Verde)
-    ══════════════════════════════════════════════ */
     body.theme-linux {
         --primary: #33ff33; --secondary: #00dd00;
         --bg: #0d0d0d; --glass: rgba(0,20,0,0.92);
@@ -409,332 +76,185 @@
         --shadow: 0 0 15px rgba(51,255,51,0.2);
         --card-border-w: 1px;
     }
-    body.theme-linux .glass-card {
-        backdrop-filter: none;
-        box-shadow: 0 0 15px rgba(51,255,51,0.15) !important;
-    }
-    body.theme-linux header { background: #001400 !important; border-bottom: 2px solid #33ff33 !important; }
-    body.theme-linux h1, body.theme-linux h2, body.theme-linux h3 {
-        color: #33ff33 !important; text-shadow: 0 0 8px #33ff33 !important; letter-spacing: 2px;
-    }
-    body.theme-linux .neon-btn {
-        border: 1px solid #33ff33 !important; color: #33ff33 !important;
-        background: transparent !important; font-family: 'Share Tech Mono', monospace !important;
-    }
-    body.theme-linux .neon-btn:hover {
-        background: #33ff33 !important; color: #001400 !important;
-        box-shadow: 0 0 15px #33ff33 !important;
-    }
-    body.theme-linux input, body.theme-linux select, body.theme-linux textarea {
-        background: #001200 !important; color: #33ff33 !important;
-        border: 1px solid #227722 !important; caret-color: #33ff33;
-    }
-    body.theme-linux .bttf-val { text-shadow: 0 0 12px #33ff33 !important; }
-    body.theme-linux .day { background: rgba(0,30,0,0.6) !important; border: 1px solid #1a4d1a !important; }
-    body.theme-linux .day-num { color: #33ff33 !important; opacity: 0.4 !important; }
-    body.theme-linux .day:hover { border-color: #33ff33 !important; background: rgba(51,255,51,0.05) !important; }
-    body.theme-linux label { color: #33ff33 !important; }
-    body.theme-linux p { color: #33ff33; }
 
-    /* ══════════════════════════════════════════════
-       CONTRASTE GLOBAL — texto siempre visible
-       Se aplica SOBRE todos los temas
-    ══════════════════════════════════════════════ */
-    body { color: var(--text-main); }
-    p, span, div, td, th, li { color: inherit; }
+    body.theme-mac {
+        --primary: #0070d8; --secondary: #00a8e8;
+        --bg: #e8e8e8; --glass: rgba(255,255,255,0.88);
+        --border: rgba(0,112,216,0.35);
+        --danger: #e8000c; --success: #28a800;
+        --text-main: #1a1a1a; --text-dim: #666666;
+        --font-body: 'Share Tech Mono', monospace;
+        --font-head: 'Share Tech Mono', monospace;
+        --radius: 12px; --radius-btn: 20px;
+        --header-bg: linear-gradient(to bottom, #e0e0e0, #c8c8c8);
+        --btn-hover-color: #ffffff;
+        --input-bg: #ffffff;
+        --shadow: 0 4px 16px rgba(0,0,0,0.15);
+        --card-border-w: 1px;
+    }
 
-    /* Textos de tarjetas/cards: heredan del tema */
-    .glass-card p, .glass-card span, .glass-card div,
-    .glass-card td, .glass-card th { color: var(--text-main); }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+        background-color: var(--bg);
+        color: var(--text-main);
+        font-family: var(--font-body);
+        font-size: 16px;
+        line-height: 1.6;
+        transition: background-color 0.4s, color 0.4s;
+    }
 
-    /* Labels siempre en primary */
-    label { color: var(--primary) !important; }
+    .glass-card {
+        background: var(--glass);
+        border: var(--card-border-w) solid var(--border);
+        border-radius: var(--radius);
+        padding: 25px;
+        box-shadow: var(--shadow);
+        backdrop-filter: blur(10px);
+    }
 
-    /* Inputs: fondo y texto según tema */
+    header {
+        display: flex; justify-content: space-between; align-items: center;
+        padding: 20px 5%; border-bottom: 3px solid var(--primary);
+        background: var(--header-bg); position: sticky; top: 0; z-index: 1000;
+    }
+
+    h1, h2, h3 {
+        font-family: var(--font-head);
+        text-transform: uppercase; letter-spacing: 2px; color: var(--primary);
+    }
+    h1 { font-size: 2rem; }
+    h2 { font-size: 1.5rem; }
+
+    .neon-btn {
+        cursor: pointer; border: 2px solid var(--primary); background: transparent;
+        color: var(--primary); padding: 12px 20px; border-radius: var(--radius-btn);
+        font-weight: bold; font-family: var(--font-head); font-size: 0.9rem; transition: 0.3s;
+    }
+    .neon-btn:hover { background: var(--primary); color: var(--btn-hover-color); box-shadow: 0 0 25px var(--primary); }
+    .neon-btn:disabled { opacity: 0.3; cursor: not-allowed; border-color: #444; color: #444; }
+    .neon-btn:disabled:hover { background: transparent; box-shadow: none; }
+
+    .main-layout {
+        display: grid; grid-template-columns: 420px 1fr; gap: 30px;
+        max-width: 1600px; margin: 30px auto; padding: 0 20px;
+    }
+
+    .bttf-display {
+        background: var(--input-bg); border: 3px solid var(--border); padding: 20px;
+        border-radius: var(--radius); text-align: center; margin-bottom: 15px;
+    }
+    .bttf-val { font-size: 2.5rem; font-family: var(--font-head); color: var(--success); text-shadow: 0 0 10px var(--success); }
+    .label-bttf { font-size: 0.8rem; color: var(--text-main); display: block; margin-bottom: 5px; opacity: 0.8; }
+
+    .cal-header { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; margin-bottom: 5px; }
+    .cal-header span { text-align: center; font-family: var(--font-head); font-size: 0.7rem; color: var(--text-dim); padding: 5px 0; }
+    .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; margin-top: 5px; }
+    .day {
+        min-height: 130px; background: rgba(255,255,255,0.05);
+        border: 1px solid #333; padding: 8px; cursor: pointer; transition: 0.2s;
+        border-radius: var(--radius); position: relative;
+    }
+    .day:hover { border-color: var(--primary); background: rgba(128,128,255,0.08); }
+    .day-num { font-size: 1.6rem; font-family: var(--font-head); font-weight: bold; opacity: 0.3; }
+    .day-weekend { background: rgba(255,0,0,0.07); }
+    .day-has-data { border-left: 4px solid var(--primary); background: rgba(128,128,255,0.05); }
+    .day-today { border-color: var(--secondary) !important; box-shadow: 0 0 10px var(--secondary); }
+    .day-edit-btn {
+        position: absolute; bottom: 5px; right: 5px;
+        font-size: 0.65rem; padding: 3px 6px;
+        border: 1px solid #555; background: transparent; color: #aaa;
+        border-radius: var(--radius-btn); cursor: pointer; font-family: var(--font-body);
+        display: none;
+    }
+    .day:hover .day-edit-btn { display: block; }
+    .day-edit-btn:hover { border-color: var(--secondary); color: var(--secondary); }
+
+    label { display: block; margin-top: 15px; font-weight: bold; color: var(--primary); font-size: 0.9rem; }
     input, select, textarea {
-        background: var(--input-bg) !important;
-        color: var(--text-main) !important;
+        width: 100%; padding: 12px; background: var(--input-bg); border: 2px solid #333;
+        color: var(--text-main); border-radius: var(--radius-btn); font-size: 1rem; margin-top: 5px;
+        font-family: var(--font-body);
     }
+    input:focus, select:focus { border-color: var(--primary); outline: none; }
 
-    /* Historial de movimientos — color dinámico lo maneja JS,
-       pero el fallback de texto es --text-main */
-    #history-log div { color: var(--text-main); }
-
-    /* Barra lateral balances */
-    .balance-tag span:first-child { color: var(--text-main) !important; }
-
-    /* Cronómetro label */
-    .label-bttf { color: var(--text-main) !important; opacity: 0.9 !important; }
-
-    /* Calendario días: texto del día */
-    .day-num { color: var(--text-main) !important; }
-    .day { color: var(--text-main); }
-
-    /* Tabla libro contable */
-    .ledger-table td { color: var(--text-main); }
-
-    /* Modales: texto base */
-    .modal-content p, .modal-content span, .modal-content div { color: var(--text-main); }
-
-    /* Tab buttons de modo tiempo */
-    .tab-btn { color: var(--text-dim) !important; border-color: var(--border) !important; }
-    .tab-btn.active { color: var(--primary) !important; border-color: var(--primary) !important; }
-
-    /* Texto-dim explícito */
-    [style*="var(--text-dim)"] { color: var(--text-dim); }
-
-    /* ══════════════════════════════════════════════
-       SELECTOR DE TEMAS — tarjetas del modal
-    ══════════════════════════════════════════════ */
-    .theme-card {
-        cursor: pointer; border-radius: 8px; border: 3px solid transparent;
-        overflow: hidden; transition: transform 0.2s, border-color 0.2s;
-        position: relative; user-select: none;
+    .modal {
+        display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0,0,0,0.92); z-index: 2000; align-items: center; justify-content: center;
     }
-    .theme-card:hover { transform: scale(1.06); }
-    .theme-card.selected { border-color: #fff !important; box-shadow: 0 0 16px rgba(255,255,255,0.4) !important; }
-    .theme-card.selected::after {
-        content: '✔'; position: absolute; top: 4px; right: 7px;
-        font-size: 1rem; color: #fff; text-shadow: 0 0 6px #000, 0 0 3px #000;
+    .modal-content { width: 90%; max-width: 700px; max-height: 92vh; overflow-y: auto; position: relative; }
+
+    .balance-tag { border-bottom: 2px solid var(--border); padding: 15px 0; display: flex; justify-content: space-between; align-items: center; }
+
+    .ledger-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+    .ledger-table th {
+        background: rgba(0, 243, 255, 0.18); color: var(--primary) !important;
+        padding: 10px; text-align: left; border: 1px solid rgba(0,243,255,0.25);
     }
-    .theme-card-preview {
-        height: 58px; display: flex; align-items: center; justify-content: center;
-        font-size: 0.85rem; font-weight: bold; letter-spacing: 1px; padding: 4px;
-        text-align: center;
+    .ledger-table td { padding: 10px; border: 1px solid rgba(255,255,255,0.08); color: #e8e8e8 !important; }
+    .ledger-debit { color: #ff6688 !important; font-weight: bold; }
+    .ledger-credit { color: #44ffaa !important; font-weight: bold; }
+
+    .time-mode-tabs { display: flex; gap: 10px; margin-bottom: 15px; }
+    .tab-btn {
+        flex: 1; padding: 10px; border-radius: 8px; border: 2px solid #333;
+        background: transparent; color: #aaa; cursor: pointer;
+        font-family: 'Orbitron'; font-size: 0.75rem; transition: 0.3s; text-transform: uppercase;
     }
-    .theme-card-label {
-        padding: 5px 3px; text-align: center; font-size: 0.6rem;
-        font-weight: bold; letter-spacing: 0.5px; text-transform: uppercase;
+    .tab-btn.active { border-color: var(--primary); color: var(--primary); background: rgba(0,243,255,0.08); }
+
+    .working-indicator {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(0,243,255,0.25);
+        border-radius: 20px;
+        padding: 4px 10px;
+        font-size: 0.7rem;
+        font-weight: bold;
+        color: var(--primary);
+        margin-top: 8px;
+        animation: pulse 1.5s infinite;
+        border: 1px solid var(--primary);
     }
+    @keyframes pulse {
+        0%, 100% { opacity: 0.7; box-shadow: 0 0 0px var(--primary); }
+        50% { opacity: 1; text-shadow: 0 0 5px var(--primary); box-shadow: 0 0 8px var(--primary); }
+    }
+    .working-indicator i { font-size: 0.7rem; }
 
-    /* ══════════════════════════════════════════════
-       BASE COMPARTIDA — heredada por todos los temas
-    ══════════════════════════════════════════════ */
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            background-color: var(--bg);
-            color: var(--text-main);
-            font-family: var(--font-body);
-            font-size: 16px;
-            line-height: 1.6;
-            transition: background-color 0.4s, color 0.4s;
-        }
+    .session-summary {
+        background: rgba(0,255,136,0.1);
+        border-radius: 8px;
+        padding: 6px 8px;
+        margin-top: 8px;
+        font-size: 0.7rem;
+        border-left: 3px solid var(--success);
+        text-align: left;
+    }
+    .session-summary span { display: block; font-size: 0.65rem; }
+    .session-hours { color: var(--primary); font-weight: bold; }
+    .session-earned { color: var(--success); font-weight: bold; }
 
-        .glass-card {
-            background: var(--glass);
-            border: var(--card-border-w) solid var(--border);
-            border-radius: var(--radius);
-            padding: 25px;
-            box-shadow: var(--shadow);
-            backdrop-filter: blur(10px);
-        }
+    .sync-badge {
+        position: fixed; bottom: 20px; right: 20px;
+        background: rgba(0,0,0,0.8); padding: 8px 15px;
+        border-radius: 20px; font-size: 0.7rem;
+        color: #00ff88; z-index: 999;
+        font-family: monospace; border: 1px solid #00ff88;
+        backdrop-filter: blur(5px);
+    }
+    .sync-badge i { margin-right: 5px; }
 
-        header {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 20px 5%; border-bottom: 3px solid var(--primary);
-            background: var(--header-bg); position: sticky; top: 0; z-index: 1000;
-        }
-
-        h1, h2, h3 {
-            font-family: var(--font-head);
-            text-transform: uppercase; letter-spacing: 2px; color: var(--primary);
-        }
-        h1 { font-size: 2rem; }
-        h2 { font-size: 1.5rem; }
-
-        .neon-btn {
-            cursor: pointer; border: 2px solid var(--primary); background: transparent;
-            color: var(--primary); padding: 12px 20px; border-radius: var(--radius-btn);
-            font-weight: bold; font-family: var(--font-head); font-size: 0.9rem; transition: 0.3s;
-        }
-        .neon-btn:hover { background: var(--primary); color: var(--btn-hover-color); box-shadow: 0 0 25px var(--primary); }
-        .neon-btn:disabled { opacity: 0.3; cursor: not-allowed; border-color: #444; color: #444; }
-        .neon-btn:disabled:hover { background: transparent; box-shadow: none; }
-
-        .main-layout {
-            display: grid; grid-template-columns: 420px 1fr; gap: 30px;
-            max-width: 1600px; margin: 30px auto; padding: 0 20px;
-        }
-
-        .bttf-display {
-            background: var(--input-bg); border: 3px solid var(--border); padding: 20px;
-            border-radius: var(--radius); text-align: center; margin-bottom: 15px;
-        }
-        .bttf-val { font-size: 2.5rem; font-family: var(--font-head); color: var(--success); text-shadow: 0 0 10px var(--success); }
-        .label-bttf { font-size: 0.8rem; color: var(--text-main); display: block; margin-bottom: 5px; opacity: 0.8; }
-
-        /* CALENDARIO */
-        .cal-header { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; margin-bottom: 5px; }
-        .cal-header span { text-align: center; font-family: var(--font-head); font-size: 0.7rem; color: var(--text-dim); padding: 5px 0; }
-        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; margin-top: 5px; }
-        .day {
-            min-height: 130px; background: rgba(255,255,255,0.05);
-            border: 1px solid #333; padding: 8px; cursor: pointer; transition: 0.2s;
-            border-radius: var(--radius); position: relative;
-        }
-        .day:hover { border-color: var(--primary); background: rgba(128,128,255,0.08); }
-        .day-num { font-size: 1.6rem; font-family: var(--font-head); font-weight: bold; opacity: 0.3; }
-        .day-weekend { background: rgba(255,0,0,0.07); }
-        .day-has-data { border-left: 4px solid var(--primary); background: rgba(128,128,255,0.05); }
-        .day-today { border-color: var(--secondary) !important; box-shadow: 0 0 10px var(--secondary); }
-        .day-edit-btn {
-            position: absolute; bottom: 5px; right: 5px;
-            font-size: 0.65rem; padding: 3px 6px;
-            border: 1px solid #555; background: transparent; color: #aaa;
-            border-radius: var(--radius-btn); cursor: pointer; font-family: var(--font-body);
-            display: none;
-        }
-        .day:hover .day-edit-btn { display: block; }
-        .day-edit-btn:hover { border-color: var(--secondary); color: var(--secondary); }
-
-        /* FORMULARIOS */
-        label { display: block; margin-top: 15px; font-weight: bold; color: var(--primary); font-size: 0.9rem; }
-        input, select, textarea {
-            width: 100%; padding: 12px; background: var(--input-bg); border: 2px solid #333;
-            color: var(--text-main); border-radius: var(--radius-btn); font-size: 1rem; margin-top: 5px;
-            font-family: var(--font-body);
-        }
-        input:focus, select:focus { border-color: var(--primary); outline: none; }
-
-        /* MODALES */
-        .modal {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.92); z-index: 2000; align-items: center; justify-content: center;
-        }
-        .modal-content { width: 90%; max-width: 700px; max-height: 92vh; overflow-y: auto; position: relative; }
-
-        .balance-tag { border-bottom: 2px solid var(--border); padding: 15px 0; display: flex; justify-content: space-between; align-items: center; }
-
-        /* LIBRO CONTABLE */
-        .ledger-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
-        .ledger-table th {
-            background: rgba(0, 243, 255, 0.18); color: var(--primary) !important;
-            padding: 10px; text-align: left; border: 1px solid rgba(0,243,255,0.25);
-            font-family: 'Orbitron', monospace; font-size: 0.7rem; letter-spacing: 1px;
-        }
-        /* FILAS: texto siempre blanco/visible, sin importar el tema oscuro */
-        .ledger-table td {
-            padding: 10px; border: 1px solid rgba(255,255,255,0.08);
-            vertical-align: top;
-            color: #e8e8e8 !important;   /* blanco suave — visible en TODOS los temas */
-            background: rgba(255,255,255,0.02);
-        }
-        .ledger-table tbody tr:nth-child(even) td { background: rgba(255,255,255,0.05); }
-        .ledger-table tbody tr:hover td { background: rgba(0,243,255,0.06) !important; }
-        /* Columnas de importe: color semántico por encima del blanco base */
-        .ledger-debit  { color: #ff6688 !important; font-weight: bold; }
-        .ledger-credit { color: #44ffaa !important; font-weight: bold; }
-        .ledger-balance { font-family: 'Orbitron', monospace !important; font-weight: bold; font-size: 0.9rem; }
-        .ledger-total-row td {
-            background: rgba(0,243,255,0.10) !important;
-            font-weight: bold; border-top: 2px solid var(--primary);
-            color: #ffffff !important;
-        }
-        /* Botón editar fila */
-        .ledger-edit-btn {
-            background: transparent; border: 1px solid rgba(0,243,255,0.4);
-            color: var(--primary); border-radius: 4px; padding: 3px 8px;
-            cursor: pointer; font-size: 0.7rem; transition: 0.2s; white-space: nowrap;
-        }
-        .ledger-edit-btn:hover { background: var(--primary); color: #000; }
-        /* Resumen por sector: texto visible */
-        #ledger-summary > div { color: #e8e8e8 !important; }
-        #ledger-summary > div > div { color: #e8e8e8 !important; }
-        /* Header del libro */
-        #ledger-capture-area { background: rgba(5,5,15,0.98); padding: 20px; border-radius: 10px; }
-        #ledger-capture-area * { color: #e8e8e8; }
-        #ledger-capture-area .ledger-debit  { color: #ff6688 !important; }
-        #ledger-capture-area .ledger-credit { color: #44ffaa !important; }
-
-        /* CAPTURA / PRINT */
-        #ledger-capture-area {
-            background: #0a0a0a;
-            padding: 20px;
-            border-radius: 10px;
-        }
-        .ledger-header-print {
-            display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 20px; padding-bottom: 15px;
-            border-bottom: 2px solid var(--primary);
-        }
-
-        /* MODO TEMPORIZADOR */
-        .timer-mode-active .bttf-val { color: var(--secondary) !important; text-shadow: 0 0 10px var(--secondary) !important; }
-        .timer-mode-active .label-bttf { color: var(--secondary); }
-
-        /* TIEMPO LIBRE */
-        .time-mode-tabs { display: flex; gap: 10px; margin-bottom: 15px; }
-        .tab-btn {
-            flex: 1; padding: 10px; border-radius: 8px; border: 2px solid #333;
-            background: transparent; color: #aaa; cursor: pointer;
-            font-family: 'Orbitron'; font-size: 0.75rem; transition: 0.3s; text-transform: uppercase;
-        }
-        .tab-btn.active { border-color: var(--primary); color: var(--primary); background: rgba(0,243,255,0.08); }
-
-        /* EDIT SESSION INLINE */
-        .session-edit-row { background: rgba(255,255,255,0.03); border-radius: 8px; padding: 15px; margin-bottom: 12px; border: 1px solid #333; }
-        .session-edit-row:hover { border-color: var(--secondary); }
-        .session-edit-row input { padding: 8px; font-size: 0.9rem; }
-
-        /* ===== INDICADOR TRABAJANDO (con animación) ===== */
-        .working-indicator {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            background: rgba(0,243,255,0.2);
-            border-radius: 20px;
-            padding: 4px 10px;
-            font-size: 0.7rem;
-            font-weight: bold;
-            color: var(--primary);
-            margin-top: 8px;
-            animation: pulse 1.5s infinite;
-            border: 1px solid var(--primary);
-        }
-        @keyframes pulse {
-            0%, 100% { opacity: 0.7; box-shadow: 0 0 0px var(--primary); }
-            50% { opacity: 1; text-shadow: 0 0 5px var(--primary); box-shadow: 0 0 8px var(--primary); }
-        }
-        .working-indicator i { font-size: 0.7rem; }
-
-        /* ===== RESUMEN DE JORNADA FINALIZADA ===== */
-        .session-summary {
-            background: rgba(0,255,136,0.1);
-            border-radius: 8px;
-            padding: 6px 8px;
-            margin-top: 8px;
-            font-size: 0.7rem;
-            border-left: 3px solid var(--success);
-            text-align: left;
-        }
-        .session-summary span {
-            display: block;
-            font-size: 0.65rem;
-        }
-        .session-hours { color: var(--primary); font-weight: bold; }
-        .session-earned { color: var(--success); font-weight: bold; }
-
-        /* ===== INDICADOR DE SINCRONIZACIÓN EN TIEMPO REAL ===== */
-        .sync-badge {
-            position: fixed; bottom: 20px; right: 20px;
-            background: rgba(0,0,0,0.8); padding: 8px 15px;
-            border-radius: 20px; font-size: 0.7rem;
-            color: #00ff88; z-index: 999;
-            font-family: monospace; border: 1px solid #00ff88;
-            backdrop-filter: blur(5px);
-        }
-        .sync-badge i { margin-right: 5px; }
-
-        @media print {
-            .no-print { display: none !important; }
-            body { background: white; color: black; }
-            .glass-card { border: 1px solid #000; background: white; }
-            h1, h2, h3, .bttf-val { color: #000 !important; text-shadow: none !important; }
-            .ledger-table th { background: #ddd; color: #000; }
-            .ledger-debit { color: #c00; }
-            .ledger-credit { color: #060; }
-            .sync-badge { display: none; }
-        }
+    @media print {
+        .no-print { display: none !important; }
+        body { background: white; color: black; }
+        .glass-card { border: 1px solid #000; background: white; }
+        h1, h2, h3, .bttf-val { color: #000 !important; text-shadow: none !important; }
+        .ledger-table th { background: #ddd; color: #000; }
+        .ledger-debit { color: #c00; }
+        .ledger-credit { color: #060; }
+        .sync-badge { display: none; }
+    }
     </style>
 </head>
 <body>
@@ -755,250 +275,67 @@
 </header>
 
 <div class="main-layout">
-
-    <!-- LADO IZQUIERDO -->
     <aside class="no-print">
         <div class="glass-card">
             <h2><i class="fa-solid fa-clock"></i> CONTROL DE TIEMPO</h2>
-
-            <!-- TABS: Libre / Por duración -->
             <div class="time-mode-tabs" style="margin-top: 20px;">
-                <button class="tab-btn active" id="tab-libre" onclick="setTimeMode('libre')">
-                    <i class="fa-solid fa-infinity"></i> TIEMPO LIBRE
-                </button>
-                <button class="tab-btn" id="tab-hasta" onclick="setTimeMode('hasta')">
-                    <i class="fa-solid fa-hourglass-half"></i> POR DURACIÓN
-                </button>
+                <button class="tab-btn active" id="tab-libre" onclick="setTimeMode('libre')"><i class="fa-solid fa-infinity"></i> TIEMPO LIBRE</button>
+                <button class="tab-btn" id="tab-hasta" onclick="setTimeMode('hasta')"><i class="fa-solid fa-hourglass-half"></i> POR DURACIÓN</button>
             </div>
-
-            <!-- Config duración (oculta por defecto) -->
             <div id="hora-limite-panel" style="display:none; background:var(--input-bg); border:1px solid var(--border); border-radius:8px; padding:15px; margin-bottom:15px;">
-                <label style="margin-top:0; color:var(--primary);">DURACIÓN A COBRAR</label>
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:8px;">
-                    <div>
-                        <label style="margin-top:0; font-size:0.8rem;">HORAS</label>
-                        <select id="dur-horas" style="font-size:1.1rem; text-align:center;">
-                            <option value="0" selected>0  h</option>
-                            <option value="1">1 h</option>
-                            <option value="2">2 h</option>
-                            <option value="3">3 h</option>
-                            <option value="4">4 h</option>
-                            <option value="5">5 h</option>
-                            <option value="6">6 h</option>
-                            <option value="7">7 h</option>
-                            <option value="8">8 h</option>
-                            <option value="9">9 h</option>
-                            <option value="10">10 h</option>
-                            <option value="11">11 h</option>
-                            <option value="12">12 h</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label style="margin-top:0; font-size:0.8rem;">MINUTOS</label>
-                        <select id="dur-minutos" style="font-size:1.1rem; text-align:center;">
-                            <option value="0" selected>00 min</option>
-                            <option value="15">15 min</option>
-                            <option value="30">30 min</option>
-                            <option value="45">45 min</option>
-                        </select>
-                    </div>
+                <label style="margin-top:0;">DURACIÓN A COBRAR</label>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                    <div><label style="margin-top:0; font-size:0.8rem;">HORAS</label><select id="dur-horas"><option value="0">0 h</option><option value="1">1 h</option><option value="2">2 h</option><option value="3">3 h</option><option value="4">4 h</option><option value="5">5 h</option><option value="6">6 h</option><option value="7">7 h</option><option value="8">8 h</option></select></div>
+                    <div><label style="margin-top:0; font-size:0.8rem;">MINUTOS</label><select id="dur-minutos"><option value="0">00 min</option><option value="15">15 min</option><option value="30">30 min</option><option value="45">45 min</option></select></div>
                 </div>
-                <p style="color: var(--text-dim); font-size: 0.8rem; margin-top: 10px;">
-                    <i class="fa-solid fa-info-circle"></i> El temporizador cuenta regresivamente y se detiene al completar la duración. Se cobra la totalidad definida.
-                </p>
             </div>
-
             <div>
                 <label>SECTOR LABORAL *</label>
-                <select id="work-sector">
-                    <option value="">-- SELECCIONE --</option>
-                    <option value="Interno">INTERNO</option>
-                    <option value="Externo">EXTERNO</option>
-                    <option value="Especial">ESPECIAL</option>
-                </select>
-
+                <select id="work-sector"><option value="">-- SELECCIONE --</option><option value="Interno">INTERNO</option><option value="Externo">EXTERNO</option><option value="Especial">ESPECIAL</option></select>
                 <label>TAREA A REALIZAR *</label>
                 <textarea id="work-desc" placeholder="Ej: Mantenimiento de servidores..." style="height: 90px;"></textarea>
             </div>
-
-            <div class="bttf-display" style="margin-top: 20px;" id="chrono-display">
-                <span class="label-bttf" id="chrono-label">TIEMPO TRANSCURRIDO</span>
+            <div class="bttf-display" style="margin-top: 20px;">
+                <span class="label-bttf">TIEMPO TRANSCURRIDO</span>
                 <div id="chronometer" class="bttf-val">00:00:00</div>
-                <div id="tiempo-restante-row" style="display:none; margin-top:8px; flex-direction:column;">
-                    <span class="label-bttf" style="color: var(--secondary);">⏳ TIEMPO RESTANTE</span>
-                    <div id="tiempo-restante" style="font-size:2rem; font-family:'Orbitron'; color:var(--secondary); text-shadow: 0 0 10px var(--secondary);">--:--:--</div>
-                </div>
-                <div id="dur-cobrada-label" style="display:none; margin-top:8px; font-size:0.8rem; color:var(--text-dim);">
-                    Cobrado: <span id="dur-cobrada-val" style="color:var(--success); font-weight:bold;"></span>
-                </div>
+                <div id="tiempo-restante-row" style="display:none; margin-top:8px;"><span class="label-bttf">⏳ TIEMPO RESTANTE</span><div id="tiempo-restante" style="font-size:2rem; font-family:'Orbitron'; color:var(--secondary);">--:--:--</div></div>
             </div>
-
             <div style="display: flex; gap: 15px;">
-                <button id="btn-start" class="neon-btn" style="flex: 1; border-color: var(--success); color: var(--success);" onclick="validateAndStart()">
-                    <i class="fa-solid fa-play"></i> INICIAR
-                </button>
-                <button id="btn-stop" class="neon-btn" style="flex: 1; border-color: var(--danger); color: var(--danger);" onclick="stopEngine()" disabled>
-                    <i class="fa-solid fa-stop"></i> FINALIZAR
-                </button>
+                <button id="btn-start" class="neon-btn" style="flex:1; border-color:var(--success); color:var(--success);" onclick="validateAndStart()"><i class="fa-solid fa-play"></i> INICIAR</button>
+                <button id="btn-stop" class="neon-btn" style="flex:1; border-color:var(--danger); color:var(--danger);" onclick="stopEngine()" disabled><i class="fa-solid fa-stop"></i> FINALIZAR</button>
             </div>
         </div>
-
         <div class="glass-card" style="margin-top: 30px;">
             <h2><i class="fa-solid fa-wallet"></i> BALANCES</h2>
             <div id="balances-render" style="margin-top: 15px;"></div>
-            <button class="neon-btn" style="width: 100%; margin-top: 20px; font-size: 0.8rem;" onclick="openModal('advance-modal')">
-                <i class="fa-solid fa-exchange-alt"></i> GESTIÓN DE PAGOS Y DEUDAS
-            </button>
+            <button class="neon-btn" style="width:100%; margin-top:20px;" onclick="openModal('advance-modal')"><i class="fa-solid fa-exchange-alt"></i> GESTIÓN DE PAGOS Y DEUDAS</button>
         </div>
     </aside>
-
-    <!-- LADO DERECHO: CALENDARIO -->
     <main>
         <div class="glass-card">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
                 <button class="neon-btn" onclick="changeMonth(-1)"><i class="fa-solid fa-arrow-left"></i></button>
                 <h2 id="calendar-title">JORNADA DEL MES</h2>
                 <button class="neon-btn" onclick="changeMonth(1)"><i class="fa-solid fa-arrow-right"></i></button>
             </div>
-            <div class="cal-header">
-                <span>LUN</span><span>MAR</span><span>MIÉ</span><span>JUE</span><span>VIE</span>
-                <span style="color:var(--danger)">SÁB</span><span style="color:var(--danger)">DOM</span>
-            </div>
+            <div class="cal-header"><span>LUN</span><span>MAR</span><span>MIÉ</span><span>JUE</span><span>VIE</span><span style="color:var(--danger)">SÁB</span><span style="color:var(--danger)">DOM</span></div>
             <div class="calendar-grid" id="calendar-body"></div>
         </div>
-
-        <div class="glass-card" style="margin-top: 30px;">
+        <div class="glass-card" style="margin-top:30px;">
             <h2><i class="fa-solid fa-history"></i> REGISTRO DE MOVIMIENTOS</h2>
-            <div id="history-log" style="max-height: 300px; overflow-y: auto; margin-top: 15px; font-size: 0.9rem;"></div>
+            <div id="history-log" style="max-height:300px; overflow-y:auto; margin-top:15px; font-size:0.9rem;"></div>
         </div>
     </main>
 </div>
 
-<!-- ═══════════════════ MODAL: LIBRO CONTABLE ═══════════════════ -->
-<div id="ledger-modal" class="modal">
-    <div class="glass-card modal-content" style="max-width: 900px;">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;" class="no-print">
-            <h2><i class="fa-solid fa-book-open"></i> LIBRO CONTABLE</h2>
-            <div style="display:flex; gap:10px;">
-                <button class="neon-btn" onclick="printLedger()" style="font-size:0.8rem;"><i class="fa-solid fa-print"></i> IMPRIMIR</button>
-                <button class="neon-btn" onclick="captureLedger()" style="font-size:0.8rem; border-color:var(--secondary); color:var(--secondary);"><i class="fa-solid fa-camera"></i> CAPTURA</button>
-                <button class="neon-btn" style="border-color:var(--danger); color:var(--danger); font-size:0.8rem;" onclick="closeModals()"><i class="fa-solid fa-times"></i></button>
-            </div>
-        </div>
-        <div style="display:flex; gap:15px; margin-bottom:20px;" class="no-print">
-            <div style="flex:1;"><label style="margin-top:0;">SECTOR</label><select id="ledger-filter-sector" onchange="renderLedger()"><option value="all">TODOS LOS SECTORES</option><option value="Interno">INTERNO</option><option value="Externo">EXTERNO</option><option value="Especial">ESPECIAL</option></select></div>
-            <div style="flex:1;"><label style="margin-top:0;">DESDE</label><input type="date" id="ledger-filter-from" onchange="renderLedger()"></div>
-            <div style="flex:1;"><label style="margin-top:0;">HASTA</label><input type="date" id="ledger-filter-to" onchange="renderLedger()"></div>
-        </div>
-        <div id="ledger-capture-area">
-            <div class="ledger-header-print">
-                <div><div style="font-family:'Orbitron'; font-size:1.3rem; color:var(--primary);" id="ledger-title-company">NEBULA SYSTEMS</div><div style="color:var(--text-dim); font-size:0.8rem;" id="ledger-subtitle">LIBRO DIARIO — BALANCE CONTABLE</div></div>
-                <div style="text-align:right;"><div style="font-size:0.8rem; color:var(--text-dim);" id="ledger-date-range"></div><div style="font-family:'Orbitron'; font-size:0.9rem; color:var(--primary);" id="ledger-generated">GENERADO: </div></div>
-            </div>
-            <table class="ledger-table" id="ledger-table-body"><thead><tr><th style="width:90px;">FECHA</th><th>CONCEPTO</th><th style="width:80px;">SECTOR</th><th style="width:100px;">DEBE (−)</th><th style="width:100px;">HABER (+)</th><th style="width:110px;">SALDO</th><th style="width:50px;" class="no-print"></th></tr></thead><tbody id="ledger-rows"></tbody></table>
-            <div id="ledger-summary" style="margin-top:25px; display:grid; grid-template-columns:repeat(3, 1fr); gap:15px;"></div>
-        </div>
-        <div id="capture-status" style="display:none; margin-top:15px; text-align:center; color:var(--success);"><i class="fa-solid fa-check-circle"></i> Imagen generada — guardada en descargas</div>
-    </div>
-</div>
+<div id="ledger-modal" class="modal"><div class="glass-card modal-content" style="max-width:900px;"><h2>LIBRO CONTABLE</h2><div id="ledger-capture-area"><table class="ledger-table"><thead><tr><th>FECHA</th><th>CONCEPTO</th><th>SECTOR</th><th>DEBE</th><th>HABER</th></tr></thead><tbody id="ledger-rows"></tbody></table></div><button class="neon-btn" onclick="closeModals()">CERRAR</button></div></div>
+<div id="config-modal" class="modal"><div class="glass-card modal-content"><h2>CONFIGURACIÓN</h2><label>NOMBRE EMPRESA</label><input type="text" id="cfg-comp"><label>EMPLEADO</label><input type="text" id="cfg-user"><label>VALOR HORA ($)</label><input type="number" id="cfg-rate"><div style="margin-top:20px;"><button class="neon-btn" onclick="saveConfig()">GUARDAR</button><button class="neon-btn" onclick="closeModals()">CERRAR</button></div></div></div>
+<div id="advance-modal" class="modal"><div class="glass-card modal-content"><h2>GESTIÓN DE MOVIMIENTOS</h2><label>SECTOR</label><select id="adv-sector"><option value="Interno">INTERNO</option><option value="Externo">EXTERNO</option><option value="Especial">ESPECIAL</option></select><label>TIPO</label><select id="adv-type"><option value="deuda">ADELANTO/DEUDA (Resta)</option><option value="pago">PAGO (Suma)</option><option value="retiro">RETIRO (Resta)</option></select><label>MONTO ($)</label><input type="number" id="adv-amount" step="0.01"><label>CONCEPTO</label><input type="text" id="adv-reason"><div style="margin-top:20px;"><button class="neon-btn" onclick="commitFinance()">REGISTRAR</button></div></div></div>
+<div id="day-modal" class="modal"><div class="glass-card modal-content"><h2 id="day-title">DETALLE</h2><div id="day-logs-render"></div><button class="neon-btn" onclick="closeModals()">CERRAR</button></div></div>
 
-<!-- ═══════════════════ MODAL: CONFIGURACIÓN ═══════════════════ -->
-<div id="config-modal" class="modal">
-    <div class="glass-card modal-content" style="max-width:820px;">
-        <h2><i class="fa-solid fa-cog"></i> CONFIGURACIÓN CENTRAL</h2>
-        <div style="margin-top:25px;">
-            <label style="font-size:1rem; letter-spacing:1px; margin-top:0;"><i class="fa-solid fa-palette"></i> TEMA VISUAL DEL SISTEMA</label>
-            <p style="color:var(--text-dim); font-size:0.8rem; margin-top:6px; margin-bottom:12px;">Seleccioná una paleta — se aplica de inmediato.</p>
-            <div id="theme-grid" style="display:grid; grid-template-columns:repeat(5,1fr); gap:10px;"></div>
-        </div>
-        <hr style="margin: 25px 0; opacity: 0.2;">
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-            <div><label>NOMBRE EMPRESA</label><input type="text" id="cfg-comp"><label>EMPLEADO</label><input type="text" id="cfg-user"></div>
-            <div><label>LOGO URL</label><input type="text" id="cfg-logo"><label>VALOR HORA ($)</label><input type="number" id="cfg-rate"></div>
-        </div>
-        <div style="margin-top: 30px; display: flex; gap: 15px;">
-            <button class="neon-btn" style="flex: 1; background: var(--success); color: #000;" onclick="saveConfig()"><i class="fa-solid fa-save"></i> GUARDAR CAMBIOS</button>
-            <button class="neon-btn" style="flex: 1; border-color: var(--danger); color: var(--danger);" onclick="closeModals()"><i class="fa-solid fa-times"></i> CERRAR</button>
-        </div>
-        <hr style="margin: 20px 0; opacity: 0.2;">
-        <div style="display: flex; gap: 15px;">
-            <button class="neon-btn" style="flex: 1;" onclick="exportDB()"><i class="fa-solid fa-download"></i> EXPORTAR BD</button>
-            <button class="neon-btn" style="flex: 1;" onclick="document.getElementById('import-file').click()"><i class="fa-solid fa-upload"></i> IMPORTAR BD</button>
-            <input type="file" id="import-file" style="display:none" onchange="importDB(event)">
-        </div>
-    </div>
-</div>
-
-<!-- ═══════════════════ MODAL: PAGOS/ADELANTOS ═══════════════════ -->
-<div id="advance-modal" class="modal">
-    <div class="glass-card modal-content">
-        <h2><i class="fa-solid fa-money-bill-transfer"></i> GESTIÓN DE MOVIMIENTOS</h2>
-        <label style="margin-top:20px;">TIPO DE MOVIMIENTO</label>
-        <div id="fin-type-tabs" style="display:grid; grid-template-columns:repeat(2,1fr); gap:8px; margin-top:8px;">
-            <button class="fin-type-btn active" data-type="deuda" onclick="selectFinType('deuda')" style="padding:12px 8px; border-radius:8px; border:2px solid var(--danger); background:rgba(255,0,85,0.12); color:var(--danger); cursor:pointer; font-family:var(--font-head); font-size:0.75rem; transition:0.2s;"><i class="fa-solid fa-arrow-down"></i><br>ADELANTO / DEUDA</button>
-            <button class="fin-type-btn" data-type="pago" onclick="selectFinType('pago')" style="padding:12px 8px; border-radius:8px; border:2px solid #444; background:transparent; color:#888; cursor:pointer; font-family:var(--font-head); font-size:0.75rem; transition:0.2s;"><i class="fa-solid fa-arrow-up"></i><br>PAGO COMPLETO</button>
-            <button class="fin-type-btn" data-type="pago_parcial" onclick="selectFinType('pago_parcial')" style="padding:12px 8px; border-radius:8px; border:2px solid #444; background:transparent; color:#888; cursor:pointer; font-family:var(--font-head); font-size:0.75rem; transition:0.2s;"><i class="fa-solid fa-percent"></i><br>PAGO PARCIAL</button>
-            <button class="fin-type-btn" data-type="retiro" onclick="selectFinType('retiro')" style="padding:12px 8px; border-radius:8px; border:2px solid #444; background:transparent; color:#888; cursor:pointer; font-family:var(--font-head); font-size:0.75rem; transition:0.2s;"><i class="fa-solid fa-wallet"></i><br>RETIRO EFECTIVO</button>
-        </div>
-        <div id="fin-type-desc" style="margin-top:8px; padding:8px 12px; border-radius:6px; font-size:0.8rem; background:rgba(255,255,255,0.04); color:var(--text-dim);"></div>
-        <label>SECTOR</label><select id="adv-sector"><option value="Interno">INTERNO</option><option value="Externo">EXTERNO</option><option value="Especial">ESPECIAL</option></select>
-        <label>MONTO ($)</label><input type="number" id="adv-amount" placeholder="0.00" min="0" step="0.01">
-        <div id="saldo-pendiente-info" style="display:none; margin-top:8px; padding:10px; border-radius:6px; background:rgba(0,243,255,0.06); border:1px solid var(--border); font-size:0.85rem;">Saldo pendiente sector: <span id="saldo-pendiente-val" style="color:var(--primary); font-weight:bold; font-family:'Orbitron';">$0.00</span></div>
-        <label>MOTIVO / CONCEPTO</label><input type="text" id="adv-reason" placeholder="Ej: Pago quincena, retiro personal...">
-        <input type="hidden" id="adv-type" value="deuda">
-        <div style="margin-top: 25px; display: flex; gap: 15px;">
-            <button class="neon-btn" style="flex: 2; background: var(--secondary); color: #fff;" onclick="commitFinance()"><i class="fa-solid fa-check"></i> REGISTRAR</button>
-            <button class="neon-btn" style="flex: 1; border-color: var(--danger); color: var(--danger);" onclick="closeModals()"><i class="fa-solid fa-times"></i> CERRAR</button>
-        </div>
-    </div>
-</div>
-
-<!-- ═══════════════════ MODAL: DETALLE / EDICIÓN DÍA ═══════════════════ -->
-<div id="day-modal" class="modal">
-    <div class="glass-card modal-content">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-            <h2 id="day-title">DETALLE DE JORNADA</h2>
-            <div style="display:flex; gap:10px;"><button id="btn-toggle-edit" class="neon-btn" style="font-size:0.8rem; border-color:var(--secondary); color:var(--secondary);" onclick="toggleEditMode()"><i class="fa-solid fa-pen"></i> EDITAR</button><button class="neon-btn" style="border-color:var(--danger); color:var(--danger); font-size:0.8rem;" onclick="closeModals()"><i class="fa-solid fa-times"></i></button></div>
-        </div>
-        <div id="day-logs-render" style="margin-top: 10px;"></div>
-        <div id="edit-actions" style="display:none; margin-top:20px;"><button class="neon-btn" style="width:100%; background:var(--success); color:#000;" onclick="saveEditedSessions()"><i class="fa-solid fa-save"></i> GUARDAR CAMBIOS</button></div>
-    </div>
-</div>
-
-<!-- ═══════════════════ MODAL: EDICIÓN ENTRADA LIBRO ═══════════════════ -->
-<div id="ledger-edit-modal" class="modal" style="z-index:3000;">
-    <div class="glass-card modal-content" style="max-width:560px;">
-        <h2><i class="fa-solid fa-pen-to-square"></i> EDITAR MOVIMIENTO</h2>
-        <input type="hidden" id="le-id"><input type="hidden" id="le-source">
-        <label>CONCEPTO / TAREA</label><input type="text" id="le-concept" placeholder="Descripción">
-        <label>SECTOR</label><select id="le-sector"><option value="Interno">INTERNO</option><option value="Externo">EXTERNO</option><option value="Especial">ESPECIAL</option></select>
-        <div id="le-session-fields"><div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;"><div><label>HORA INICIO</label><input type="text" id="le-start" placeholder="HH:MM:SS"></div><div><label>HORA FIN</label><input type="text" id="le-end" placeholder="HH:MM:SS"></div></div></div>
-        <div id="le-finance-fields" style="display:none;"><label>TIPO DE MOVIMIENTO</label><select id="le-fin-type"><option value="deuda">ADELANTO / DEUDA (Resta)</option><option value="pago">PAGO COMPLETO (Suma)</option><option value="pago_parcial">PAGO PARCIAL (Suma)</option><option value="retiro">RETIRO EFECTIVO (Resta)</option></select><label>MONTO ($)</label><input type="number" id="le-amount" min="0" step="0.01" placeholder="0.00"></div>
-        <div id="le-recalc-preview" style="margin-top:12px; padding:10px; border-radius:8px; background:rgba(0,243,255,0.06); border:1px solid var(--border); font-size:0.85rem; display:none;">Nuevo ganado: <span id="le-preview-earned" style="color:var(--success); font-weight:bold;"></span></div>
-        <div style="margin-top:25px; display:flex; gap:12px;"><button class="neon-btn" style="flex:2; background:var(--primary); color:#000;" onclick="saveLedgerEdit()"><i class="fa-solid fa-save"></i> GUARDAR</button><button class="neon-btn" style="flex:1; border-color:var(--danger); color:var(--danger);" onclick="document.getElementById('ledger-edit-modal').style.display='none'; openModal('ledger-modal');"><i class="fa-solid fa-times"></i> CANCELAR</button></div>
-        <div style="margin-top:12px;"><button class="neon-btn" style="width:100%; border-color:var(--danger); color:var(--danger); font-size:0.8rem;" onclick="deleteLedgerEntry()"><i class="fa-solid fa-trash"></i> ELIMINAR ESTE MOVIMIENTO</button></div>
-    </div>
-</div>
-
-<!-- ═══════════════════ MODAL: CONFIRMACIÓN RETIRO ═══════════════════ -->
-<div id="retiro-modal" class="modal" style="z-index:3100;">
-    <div class="glass-card modal-content" style="max-width:500px; text-align:center;">
-        <div style="font-size:3rem; margin-bottom:15px;">💸</div>
-        <h2 style="margin-bottom:15px;">CONFIRMAR MOVIMIENTO</h2>
-        <div id="retiro-resumen" style="background:rgba(0,243,255,0.06); border:1px solid var(--border); border-radius:10px; padding:20px; margin-bottom:20px; font-size:0.95rem;"></div>
-        <p style="color:var(--text-main); font-size:1rem; margin-bottom:20px; font-weight:bold;">¿Ya retiraste el dinero o ya lo tenés en tu billetera?</p>
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px;"><button class="neon-btn" style="border-color:var(--success); color:var(--success); padding:20px 10px; font-size:0.85rem;" onclick="confirmRetiro(true)"><i class="fa-solid fa-check-circle" style="display:block; font-size:2rem; margin-bottom:8px;"></i>SÍ, YA LO TENGO<br><span style="font-size:0.7rem; opacity:0.8;">Registrar como retirado</span></button><button class="neon-btn" style="border-color:var(--secondary); color:var(--secondary); padding:20px 10px; font-size:0.85rem;" onclick="confirmRetiro(false)"><i class="fa-solid fa-clock" style="display:block; font-size:2rem; margin-bottom:8px;"></i>TODAVÍA NO<br><span style="font-size:0.7rem; opacity:0.8;">Registrar como pendiente</span></button></div>
-        <button class="neon-btn" style="width:100%; margin-top:15px; border-color:var(--danger); color:var(--danger); font-size:0.8rem;" onclick="document.getElementById('retiro-modal').style.display='none';"><i class="fa-solid fa-times"></i> CANCELAR</button>
-    </div>
-</div>
-
-<!-- INDICADOR DE SINCRONIZACIÓN EN TIEMPO REAL -->
 <div class="sync-badge no-print"><i class="fa-solid fa-cloud-arrow-up"></i> <span id="sync-status">Sincronizado</span></div>
 
 <script>
-    // ══════════════════════════════════════════════════════════════
-    //  🔥 CONFIGURACIÓN FIREBASE (TIEMPO REAL)
-    // ══════════════════════════════════════════════════════════════
     const FIREBASE_CONFIG = {
         apiKey: "AIzaSyCeC8O4X6tD2qCekDaKV9wZVs48TUaSmVU",
         authDomain: "jornadascinerama.firebaseapp.com",
@@ -1013,64 +350,26 @@
     const NEBULA_DOC = firestoreDB.collection('nebula').doc('main');
     const ACTIVE_SESSION_DOC = firestoreDB.collection('activeSession').doc('current');
 
-    // ── ESTADO GLOBAL ──────────────────────────────────────────
-    let db = {
-        config: { company: "NEBULA SYSTEMS", user: "ADMIN", logo: "", rate: 100, themeId: "nebula" },
-        sessions: [],
-        finance: []
-    };
-
-    let timerIdx = null;
-    let startTime = null;
-    let viewDate = new Date();
-    let currentTimeMode = 'libre';
-    let limitTimestamp = null;
-    let contractedSec = 0;
-    let contractedEarned = 0;
-    let editMode = false;
-    let currentEditDate = null;
-    let currentFinType = 'deuda';
-    
-    // Variables para control de jornada activa (ahora desde Firestore)
-    let activeSession = { date: null, startTime: null, userId: null };
-
-    // ── VARIABLES PARA SINCRONIZACIÓN EN TIEMPO REAL ────────────
-    let isSyncing = false;
-    let isFirstLoad = true;
+    let db = { config: { company: "NEBULA SYSTEMS", user: "ADMIN", rate: 100, themeId: "nebula" }, sessions: [], finance: [] };
+    let timerIdx = null, startTime = null, viewDate = new Date(), currentTimeMode = 'libre', limitTimestamp = null, contractedSec = 0, contractedEarned = 0, editMode = false, currentEditDate = null, currentFinType = 'deuda';
+    let activeSession = { date: null, active: false };
+    let isSyncing = false, isFirstLoad = true;
 
     function updateSyncStatus(text, isError = false) {
         const el = document.getElementById('sync-status');
-        if (el) {
-            el.innerText = text;
-            if (isError) el.style.color = '#ff6688';
-            else if (text === 'Sincronizado') el.style.color = '#44ffaa';
-            else el.style.color = '#ffaa44';
-        }
+        if (el) { el.innerText = text; el.style.color = isError ? '#ff6688' : text === 'Sincronizado' ? '#44ffaa' : '#ffaa44'; }
     }
 
     async function pushToFirestore() {
         if (isSyncing) return;
         isSyncing = true;
         updateSyncStatus('Guardando...');
-        try {
-            await NEBULA_DOC.set(db);
-            updateSyncStatus('Sincronizado');
-        } catch(e) {
-            console.warn('Error Firestore:', e);
-            updateSyncStatus('Error local', true);
-            localStorage.setItem('nebula_corp_db_backup', JSON.stringify(db));
-        }
+        try { await NEBULA_DOC.set(db); updateSyncStatus('Sincronizado'); } catch(e) { console.warn(e); updateSyncStatus('Error local', true); localStorage.setItem('nebula_corp_db_backup', JSON.stringify(db)); }
         isSyncing = false;
     }
 
-    async function updateActiveSessionInFirestore(date, start, userId, isActive) {
-        try {
-            if (isActive) {
-                await ACTIVE_SESSION_DOC.set({ date, startTime: start, userId, active: true, timestamp: Date.now() });
-            } else {
-                await ACTIVE_SESSION_DOC.set({ active: false, timestamp: Date.now() });
-            }
-        } catch(e) { console.warn('Error actualizando sesión activa:', e); }
+    async function updateActiveSession(date, isActive) {
+        try { await ACTIVE_SESSION_DOC.set({ date: date, active: isActive, timestamp: Date.now() }); } catch(e) { console.warn('Error actualizando sesión activa:', e); }
     }
 
     function pullFromFirestore(snapshot) {
@@ -1080,11 +379,7 @@
         if (isFirstLoad) { isFirstLoad = false; return; }
         if (JSON.stringify(remoteData) !== JSON.stringify(db)) {
             db = remoteData;
-            initUI();
-            renderCalendar();
-            updateBalances();
-            if (typeof renderLedger === 'function') renderLedger();
-            if (currentEditDate) renderDayLogs(currentEditDate, editMode);
+            initUI(); renderCalendar(); updateBalances(); if (typeof renderLedger === 'function') renderLedger(); if (currentEditDate) renderDayLogs(currentEditDate, editMode);
             updateSyncStatus('Sincronizado');
         }
     }
@@ -1092,37 +387,20 @@
     function pullActiveSession(snapshot) {
         if (snapshot.exists) {
             const data = snapshot.data();
-            if (data && data.active) {
-                activeSession = { date: data.date, startTime: data.startTime, userId: data.userId };
-            } else {
-                activeSession = { date: null, startTime: null, userId: null };
-            }
-            renderCalendar(); // Refrescar calendario para mostrar/ocultar el indicador
-        }
+            activeSession = { date: data?.date || null, active: data?.active || false };
+        } else { activeSession = { date: null, active: false }; }
+        renderCalendar();
     }
 
-    // ── INIT ───────────────────────────────────────────────────
     window.onload = async () => {
         document.body.style.opacity = '0.6';
         try {
             const snap = await NEBULA_DOC.get();
-            if (snap.exists) {
-                db = snap.data();
-            } else {
-                const saved = localStorage.getItem('nebula_corp_db');
-                if (saved) {
-                    db = JSON.parse(saved);
-                    await NEBULA_DOC.set(db);
-                }
-            }
+            if (snap.exists) db = snap.data();
+            else { const saved = localStorage.getItem('nebula_corp_db'); if (saved) db = JSON.parse(saved); await NEBULA_DOC.set(db); }
             NEBULA_DOC.onSnapshot(pullFromFirestore);
             ACTIVE_SESSION_DOC.onSnapshot(pullActiveSession);
-        } catch(e) {
-            console.warn('Firestore no disponible:', e);
-            const saved = localStorage.getItem('nebula_corp_db');
-            if (saved) db = JSON.parse(saved);
-            updateSyncStatus('Offline', true);
-        }
+        } catch(e) { console.warn('Firestore no disponible:', e); const saved = localStorage.getItem('nebula_corp_db'); if (saved) db = JSON.parse(saved); updateSyncStatus('Offline', true); }
         document.body.style.opacity = '1';
         initUI();
         setInterval(updateClock, 1000);
@@ -1130,35 +408,13 @@
         updateBalances();
     };
 
-    // ── CATÁLOGO DE TEMAS ──────────────────────────────────────
     const THEMES = [
-        { id: 'nebula', label: 'NEBULA', icon: '🌌', preview: { bg: '#0a0a0a', text: '#00f3ff', accent: '#bc13fe' }, description: 'Tema por defecto' },
-        { id: 'msdos', label: 'MS-DOS', icon: '⬛', preview: { bg: '#000000', text: '#aaaaaa', accent: '#666666' }, description: 'MS-DOS' },
-        { id: 'commodore', label: 'C64', icon: '🕹️', preview: { bg: '#4040a0', text: '#e0deff', accent: '#7b70e8' }, description: 'Commodore 64' },
-        { id: 'win31', label: 'WIN 3.1', icon: '🪟', preview: { bg: '#008080', text: '#000000', accent: '#000080' }, description: 'Windows 3.1' },
-        { id: 'win95', label: 'WIN 95', icon: '💾', preview: { bg: '#008080', text: '#000000', accent: '#000080' }, description: 'Windows 95' },
-        { id: 'win98', label: 'WIN 98', icon: '🖥️', preview: { bg: '#3a6ea5', text: '#000000', accent: '#1c5fa5' }, description: 'Windows 98' },
-        { id: 'winme', label: 'WIN ME', icon: '💿', preview: { bg: '#244f96', text: '#000000', accent: '#2e6bc7' }, description: 'Windows ME' },
-        { id: 'winxp', label: 'WIN XP', icon: '🌿', preview: { bg: '#236b24', text: '#000000', accent: '#245edb' }, description: 'Windows XP' },
-        { id: 'mac', label: 'MAC OS', icon: '🍎', preview: { bg: '#e8e8e8', text: '#1a1a1a', accent: '#0070d8' }, description: 'Mac OS X' },
-        { id: 'linux', label: 'LINUX', icon: '🐧', preview: { bg: '#0d0d0d', text: '#33ff33', accent: '#00dd00' }, description: 'Linux Terminal' }
+        { id: 'nebula', label: 'NEBULA', icon: '🌌', preview: { bg: '#0a0a0a', text: '#00f3ff', accent: '#bc13fe' } },
+        { id: 'msdos', label: 'MS-DOS', icon: '⬛', preview: { bg: '#000000', text: '#aaaaaa', accent: '#666666' } },
+        { id: 'commodore', label: 'C64', icon: '🕹️', preview: { bg: '#4040a0', text: '#e0deff', accent: '#7b70e8' } },
+        { id: 'linux', label: 'LINUX', icon: '🐧', preview: { bg: '#0d0d0d', text: '#33ff33', accent: '#00dd00' } },
+        { id: 'mac', label: 'MAC OS', icon: '🍎', preview: { bg: '#e8e8e8', text: '#1a1a1a', accent: '#0070d8' } }
     ];
-
-    function buildThemeGrid() {
-        const grid = document.getElementById('theme-grid');
-        if (!grid) return;
-        grid.innerHTML = '';
-        const current = db.config.themeId || 'nebula';
-        THEMES.forEach(t => {
-            const card = document.createElement('div');
-            card.className = `theme-card ${t.id === current ? 'selected' : ''}`;
-            card.title = t.description;
-            card.style.cssText = `border-color: ${t.id === current ? '#ffffff' : t.preview.accent};`;
-            card.innerHTML = `<div class="theme-card-preview" style="background:${t.preview.bg}; color:${t.preview.text};"><span style="text-shadow: 0 0 8px ${t.preview.accent};">${t.icon} ${t.label}</span></div><div class="theme-card-label" style="background:${t.preview.accent}; color:${t.preview.bg === '#e8e8e8' ? '#000' : '#fff'};">${t.label}</div>`;
-            card.onclick = () => applyTheme(t.id);
-            grid.appendChild(card);
-        });
-    }
 
     function applyTheme(themeId) {
         THEMES.forEach(t => document.body.classList.remove('theme-' + t.id));
@@ -1173,13 +429,9 @@
         document.getElementById('cfg-comp').value = db.config.company;
         document.getElementById('cfg-user').value = db.config.user;
         document.getElementById('cfg-rate').value = db.config.rate;
-        document.getElementById('cfg-logo').value = db.config.logo || '';
         const themeId = db.config.themeId || 'nebula';
         THEMES.forEach(t => document.body.classList.remove('theme-' + t.id));
         if (themeId !== 'nebula') document.body.classList.add('theme-' + themeId);
-        const logo = document.getElementById('display-logo');
-        if (db.config.logo) { logo.src = db.config.logo; logo.style.display = 'block'; }
-        else logo.style.display = 'none';
     }
 
     function updateClock() { document.getElementById('digital-clock').innerText = new Date().toLocaleTimeString(); }
@@ -1188,19 +440,18 @@
         document.getElementById('tab-libre').classList.toggle('active', mode === 'libre');
         document.getElementById('tab-hasta').classList.toggle('active', mode === 'hasta');
         document.getElementById('hora-limite-panel').style.display = mode === 'hasta' ? 'block' : 'none';
-        document.getElementById('tiempo-restante-row').style.display = mode === 'hasta' ? 'flex' : 'none';
-        document.getElementById('tiempo-restante-row').style.flexDirection = 'column';
+        document.getElementById('tiempo-restante-row').style.display = mode === 'hasta' ? 'block' : 'none';
     }
 
     function validateAndStart() {
         const sector = document.getElementById('work-sector').value;
         const desc = document.getElementById('work-desc').value;
-        if (!sector || !desc.trim()) { alert("⚠️ Debe seleccionar Sector Laboral y describir la Tarea."); return; }
+        if (!sector || !desc.trim()) { alert("⚠️ Debe seleccionar Sector y describir la Tarea."); return; }
         if (currentTimeMode === 'hasta') {
             const horas = parseInt(document.getElementById('dur-horas').value) || 0;
             const minutos = parseInt(document.getElementById('dur-minutos').value) || 0;
             const totalSeg = horas * 3600 + minutos * 60;
-            if (totalSeg <= 0) { alert("⚠️ Debe definir una duración mayor a 0."); return; }
+            if (totalSeg <= 0) { alert("⚠️ Defina una duración mayor a 0."); return; }
             limitTimestamp = new Date(Date.now() + totalSeg * 1000);
             contractedSec = totalSeg;
             contractedEarned = (Math.ceil(totalSeg / 60) / 60) * db.config.rate;
@@ -1212,64 +463,40 @@
         try {
             const AudioCtx = window.AudioContext || window.webkitAudioContext;
             if (!AudioCtx) return;
-            const isAndroid = /Android/i.test(navigator.userAgent);
             const ctx = new AudioCtx();
-            const beepConfig = isAndroid ? [
-                { freq: 1200, start: 0.00, dur: 0.08, vol: 0.7 },
-                { freq: 900, start: 0.12, dur: 0.08, vol: 0.7 },
-                { freq: 1200, start: 0.24, dur: 0.10, vol: 0.8 }
-            ] : [
-                { freq: 880, start: 0.00, dur: 0.18, vol: 0.6 },
-                { freq: 880, start: 0.28, dur: 0.18, vol: 0.6 },
-                { freq: 880, start: 0.56, dur: 0.25, vol: 0.7 }
-            ];
-            beepConfig.forEach(({ freq, start, dur, vol }) => {
+            [880, 880, 880].forEach((freq, i) => {
                 const osc = ctx.createOscillator();
                 const gain = ctx.createGain();
-                osc.connect(gain);
-                gain.connect(ctx.destination);
-                osc.type = isAndroid ? 'sine' : 'square';
-                osc.frequency.setValueAtTime(freq, ctx.currentTime + start);
-                gain.gain.setValueAtTime(0, ctx.currentTime + start);
-                gain.gain.linearRampToValueAtTime(vol, ctx.currentTime + start + 0.01);
-                gain.gain.setValueAtTime(vol, ctx.currentTime + start + dur - 0.02);
-                gain.gain.linearRampToValueAtTime(0, ctx.currentTime + start + dur);
-                osc.start(ctx.currentTime + start);
-                osc.stop(ctx.currentTime + start + dur + 0.01);
+                osc.connect(gain); gain.connect(ctx.destination);
+                osc.type = 'square';
+                osc.frequency.value = freq;
+                gain.gain.value = 0.3;
+                osc.start(ctx.currentTime + i * 0.3);
+                gain.gain.exponentialRampToValueAtTime(0.00001, ctx.currentTime + i * 0.3 + 0.2);
+                osc.stop(ctx.currentTime + i * 0.3 + 0.2);
             });
-            const lastBeep = beepConfig[beepConfig.length - 1];
-            setTimeout(() => { ctx.close().catch(() => {}); }, (lastBeep.start + lastBeep.dur + 0.1) * 1000);
-        } catch(e) { console.warn('Audio no disponible:', e); }
+        } catch(e) {}
     }
 
     function startEngine() {
         startTime = new Date();
-        const isHasta = currentTimeMode === 'hasta';
         const todayStr = startTime.toISOString().split('T')[0];
-        
-        // Guardar en Firestore que hay una sesión activa (para que TODOS lo vean)
-        updateActiveSessionInFirestore(todayStr, startTime.toLocaleTimeString(), 'user_' + Date.now(), true);
+        updateActiveSession(todayStr, true);
 
-        if (isHasta) {
+        if (currentTimeMode === 'hasta') {
             document.getElementById('chrono-display').classList.add('timer-mode-active');
             document.getElementById('chrono-label').innerText = 'TRANSCURRIDO';
-            document.getElementById('tiempo-restante-row').style.display = 'flex';
-            document.getElementById('dur-cobrada-label').style.display = 'block';
-            document.getElementById('dur-cobrada-val').innerText = `$${contractedEarned.toFixed(2)} (${formatHMS(contractedSec)})`;
+            document.getElementById('tiempo-restante-row').style.display = 'block';
         }
 
         timerIdx = setInterval(() => {
             const now = new Date();
             const diff = Math.ceil((now - startTime) / 1000);
             document.getElementById('chronometer').innerText = formatHMS(diff);
-            if (isHasta && limitTimestamp) {
+            if (currentTimeMode === 'hasta' && limitTimestamp) {
                 const remaining = Math.ceil((limitTimestamp - now) / 1000);
                 if (remaining <= 0) { document.getElementById('tiempo-restante').innerText = '00:00:00'; stopEngine(true); }
-                else {
-                    document.getElementById('tiempo-restante').innerText = formatHMS(remaining);
-                    document.getElementById('tiempo-restante').style.color = remaining <= 300 ? 'var(--danger)' : 'var(--secondary)';
-                    document.getElementById('tiempo-restante').style.textShadow = remaining <= 300 ? '0 0 10px var(--danger)' : '0 0 10px var(--secondary)';
-                }
+                else { document.getElementById('tiempo-restante').innerText = formatHMS(remaining); }
             }
         }, 250);
 
@@ -1279,8 +506,6 @@
         document.getElementById('work-desc').disabled = true;
         document.getElementById('tab-libre').disabled = true;
         document.getElementById('tab-hasta').disabled = true;
-        
-        renderCalendar(); // Refrescar para mostrar el indicador inmediatamente
     }
 
     function stopEngine(auto = false) {
@@ -1306,25 +531,18 @@
                 duration: durationSec, durationMin: durationMin, sector: sector, task: desc, earned: earned
             });
         }
-        
-        // Limpiar sesión activa en Firestore
-        updateActiveSessionInFirestore(null, null, null, false);
-        
+        updateActiveSession(null, false);
         saveAndRefresh();
         resetControlPanel();
         if (auto) {
             playNotificationBeeps();
-            setTimeout(() => { alert(`✅ JORNADA COMPLETADA\nDuración cobrada: ${formatHMS(durationSec)}\nMinutos: ${durationMin} min\nGanado: $${earned.toFixed(2)}`); }, 700);
+            setTimeout(() => alert(`✅ JORNADA COMPLETADA\nDuración cobrada: ${formatHMS(durationSec)}\nMinutos: ${durationMin} min\nGanado: $${earned.toFixed(2)}`), 700);
         }
-        renderCalendar(); // Refrescar para quitar el indicador
     }
 
     function resetControlPanel() {
         clearInterval(timerIdx);
-        limitTimestamp = null;
-        contractedSec = 0;
-        contractedEarned = 0;
-        startTime = null;
+        limitTimestamp = null; contractedSec = 0; contractedEarned = 0; startTime = null;
         document.getElementById('btn-start').disabled = false;
         document.getElementById('btn-stop').disabled = true;
         document.getElementById('work-sector').disabled = false;
@@ -1332,10 +550,7 @@
         document.getElementById('work-desc').value = '';
         document.getElementById('chronometer').innerText = '00:00:00';
         document.getElementById('tiempo-restante').innerText = '--:--:--';
-        document.getElementById('tiempo-restante').style.color = 'var(--secondary)';
-        document.getElementById('tiempo-restante').style.textShadow = '0 0 10px var(--secondary)';
         document.getElementById('tiempo-restante-row').style.display = 'none';
-        document.getElementById('dur-cobrada-label').style.display = 'none';
         document.getElementById('chrono-display').classList.remove('timer-mode-active');
         document.getElementById('chrono-label').innerText = 'TIEMPO TRANSCURRIDO';
         document.getElementById('tab-libre').disabled = false;
@@ -1355,12 +570,10 @@
         for (let i = 0; i < offset; i++) body.innerHTML += `<div></div>`;
         for (let d = 1; d <= totalDays; d++) {
             const dateISO = `${y}-${String(m + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
-            const dow = new Date(y, m, d).getDay();
-            const isWeekend = [0, 6].includes(dow);
+            const isWeekend = [0, 6].includes(new Date(y, m, d).getDay());
             const hasData = db.sessions.some(s => s.date === dateISO);
             const isToday = dateISO === todayStr;
-            // Verificar si hay sesión activa (desde Firestore) en el día actual
-            const isActiveDay = isToday && activeSession && activeSession.active === true;
+            const isActiveDay = isToday && activeSession.active === true;
             const daySessions = db.sessions.filter(s => s.date === dateISO);
             const lastSession = daySessions.length > 0 ? daySessions[daySessions.length - 1] : null;
             const totalEarned = daySessions.reduce((sum, s) => sum + s.earned, 0);
@@ -1376,11 +589,9 @@
         currentEditDate = date;
         editMode = false;
         document.getElementById('day-title').innerText = `JORNADA: ${date}`;
-        document.getElementById('edit-actions').style.display = 'none';
-        document.getElementById('btn-toggle-edit').innerHTML = '<i class="fa-solid fa-pen"></i> EDITAR';
         renderDayLogs(date, false);
         openModal('day-modal');
-        if (startEdit) { setTimeout(() => toggleEditMode(), 100); }
+        if (startEdit) setTimeout(() => toggleEditMode(), 100);
     }
 
     function renderDayLogs(date, editable) {
@@ -1391,9 +602,9 @@
         if (logs.length === 0) { container.innerHTML = '<p style="color:var(--text-dim);">No hay registros este día.</p>'; return; }
         logs.forEach(l => {
             if (editable) {
-                container.innerHTML += `<div class="session-edit-row" data-id="${l.id}"><div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;"><span style="color:var(--secondary); font-family:'Orbitron'; font-size:0.8rem;">${l.sector.toUpperCase()}</span><button onclick="deleteSession(${l.id})" style="background:transparent; border:1px solid var(--danger); color:var(--danger); border-radius:5px; padding:4px 10px; cursor:pointer; font-size:0.75rem;"><i class="fa-solid fa-trash"></i> ELIMINAR</button></div><div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;"><div><label style="margin-top:0; font-size:0.8rem;">HORA INICIO</label><input type="text" class="edit-start" value="${l.start}" data-id="${l.id}" placeholder="HH:MM:SS"></div><div><label style="margin-top:0; font-size:0.8rem;">HORA FIN</label><input type="text" class="edit-end" value="${l.end}" data-id="${l.id}" placeholder="HH:MM:SS"></div></div><label style="font-size:0.8rem;">TAREA</label><input type="text" class="edit-task" value="${l.task}" data-id="${l.id}"><label style="font-size:0.8rem;">SECTOR</label><select class="edit-sector" data-id="${l.id}"><option value="Interno" ${l.sector === 'Interno' ? 'selected' : ''}>INTERNO</option><option value="Externo" ${l.sector === 'Externo' ? 'selected' : ''}>EXTERNO</option><option value="Especial" ${l.sector === 'Especial' ? 'selected' : ''}>ESPECIAL</option></select><div style="margin-top:10px; color:var(--success); font-size:0.85rem;">Ganado actual: <strong>$${l.earned.toFixed(2)}</strong></div></div>`;
+                container.innerHTML += `<div class="session-edit-row" data-id="${l.id}" style="background:rgba(255,255,255,0.03); border-radius:8px; padding:15px; margin-bottom:12px; border:1px solid #333;"><div style="display:flex; justify-content:space-between;"><span style="color:var(--secondary);">${l.sector.toUpperCase()}</span><button onclick="deleteSession(${l.id})" style="background:transparent; border:1px solid var(--danger); color:var(--danger); border-radius:5px; padding:4px 10px; cursor:pointer;"><i class="fa-solid fa-trash"></i> ELIMINAR</button></div><div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px;"><div><label>HORA INICIO</label><input type="text" class="edit-start" value="${l.start}" data-id="${l.id}"></div><div><label>HORA FIN</label><input type="text" class="edit-end" value="${l.end}" data-id="${l.id}"></div></div><label>TAREA</label><input type="text" class="edit-task" value="${l.task}" data-id="${l.id}"><label>SECTOR</label><select class="edit-sector" data-id="${l.id}"><option value="Interno" ${l.sector === 'Interno' ? 'selected' : ''}>INTERNO</option><option value="Externo" ${l.sector === 'Externo' ? 'selected' : ''}>EXTERNO</option><option value="Especial" ${l.sector === 'Especial' ? 'selected' : ''}>ESPECIAL</option></select><div style="margin-top:10px; color:var(--success);">Ganado actual: <strong>$${l.earned.toFixed(2)}</strong></div></div>`;
             } else {
-                container.innerHTML += `<div class="glass-card" style="margin-bottom: 10px; border-color: #555;"><p><strong>Sector:</strong> ${l.sector} | <strong>Hora:</strong> ${l.start} – ${l.end}</p><p><strong>Duración real:</strong> ${formatHMS(l.duration)}</p><p><strong>Minutos cobrados:</strong> <span style="color:var(--primary)">${l.durationMin || Math.ceil(l.duration / 60)} min</span> <span style="color:var(--text-dim); font-size:0.8rem;">(redondeo ↑)</span></p><p><strong>Tarea:</strong> ${l.task}</p><p style="color:var(--success)"><strong>Ganado:</strong> $${l.earned.toFixed(2)}</p></div>`;
+                container.innerHTML += `<div class="glass-card" style="margin-bottom:10px; border-color:#555;"><p><strong>Sector:</strong> ${l.sector} | <strong>Hora:</strong> ${l.start} – ${l.end}</p><p><strong>Duración real:</strong> ${formatHMS(l.duration)}</p><p><strong>Minutos cobrados:</strong> <span style="color:var(--primary)">${l.durationMin || Math.ceil(l.duration / 60)} min</span></p><p><strong>Tarea:</strong> ${l.task}</p><p style="color:var(--success)"><strong>Ganado:</strong> $${l.earned.toFixed(2)}</p></div>`;
             }
         });
     }
@@ -1401,7 +612,6 @@
     function toggleEditMode() {
         editMode = !editMode;
         renderDayLogs(currentEditDate, editMode);
-        document.getElementById('edit-actions').style.display = editMode ? 'block' : 'none';
         document.getElementById('btn-toggle-edit').innerHTML = editMode ? '<i class="fa-solid fa-eye"></i> VER' : '<i class="fa-solid fa-pen"></i> EDITAR';
     }
 
@@ -1426,7 +636,6 @@
         saveAndRefresh();
         editMode = false;
         renderDayLogs(currentEditDate, false);
-        document.getElementById('edit-actions').style.display = 'none';
         document.getElementById('btn-toggle-edit').innerHTML = '<i class="fa-solid fa-pen"></i> EDITAR';
         alert('✅ Cambios guardados correctamente.');
     }
@@ -1438,269 +647,45 @@
         renderDayLogs(currentEditDate, editMode);
     }
 
-    let pendingRetiroData = null;
-
-    function openLedgerEdit(sourceType, sourceId) {
-        document.getElementById('ledger-modal').style.display = 'none';
-        document.getElementById('le-source').value = sourceType;
-        document.getElementById('le-id').value = sourceId;
-        const modal = document.getElementById('ledger-edit-modal');
-        const sessionFields = document.getElementById('le-session-fields');
-        const financeFields = document.getElementById('le-finance-fields');
-        const preview = document.getElementById('le-recalc-preview');
-        if (sourceType === 'session') {
-            const s = db.sessions.find(x => String(x.id) === sourceId);
-            if (!s) return;
-            sessionFields.style.display = 'block';
-            financeFields.style.display = 'none';
-            document.getElementById('le-concept').value = s.task;
-            document.getElementById('le-sector').value = s.sector;
-            document.getElementById('le-start').value = s.start;
-            document.getElementById('le-end').value = s.end;
-            preview.style.display = 'block';
-            document.getElementById('le-preview-earned').innerText = `$${s.earned.toFixed(2)}`;
-            ['le-start', 'le-end'].forEach(id => { document.getElementById(id).oninput = recalcPreview; });
-        } else {
-            const idx = parseInt(sourceId);
-            const f = db.finance[idx];
-            if (!f) return;
-            sessionFields.style.display = 'none';
-            financeFields.style.display = 'block';
-            preview.style.display = 'none';
-            document.getElementById('le-concept').value = f.reason;
-            document.getElementById('le-sector').value = f.sector;
-            document.getElementById('le-fin-type').value = f.type;
-            document.getElementById('le-amount').value = f.amount;
-        }
-        modal.style.display = 'flex';
-    }
-
-    function recalcPreview() {
-        const startStr = document.getElementById('le-start').value;
-        const endStr = document.getElementById('le-end').value;
-        const parseT = (str) => { const parts = str.split(':').map(Number); const d = new Date(); d.setHours(parts[0] || 0, parts[1] || 0, parts[2] || 0, 0); return d; };
-        try {
-            const s = parseT(startStr), e = parseT(endStr);
-            const durMs = Math.max(0, e - s);
-            const dur = Math.ceil(durMs / 1000);
-            const durMin = Math.ceil(dur / 60);
-            const earned = (durMin / 60) * db.config.rate;
-            document.getElementById('le-preview-earned').innerText = `$${earned.toFixed(2)} (${formatHMS(dur)})`;
-        } catch(e) {}
-    }
-
-    function saveLedgerEdit() {
-        const sourceType = document.getElementById('le-source').value;
-        const sourceId = document.getElementById('le-id').value;
-        const concept = document.getElementById('le-concept').value.trim();
-        const sector = document.getElementById('le-sector').value;
-        if (!concept) { alert('El concepto no puede estar vacío.'); return; }
-        if (sourceType === 'session') {
-            const idx = db.sessions.findIndex(x => String(x.id) === sourceId);
-            if (idx === -1) return;
-            const startStr = document.getElementById('le-start').value;
-            const endStr = document.getElementById('le-end').value;
-            const parseT = (str) => { const parts = str.split(':').map(Number); const d = new Date(); d.setHours(parts[0] || 0, parts[1] || 0, parts[2] || 0, 0); return d; };
-            const s = parseT(startStr), e = parseT(endStr);
-            const durMs = Math.max(0, e - s);
-            const dur = Math.ceil(durMs / 1000);
-            const durMin = Math.ceil(dur / 60);
-            const earned = (durMin / 60) * db.config.rate;
-            db.sessions[idx] = { ...db.sessions[idx], task: concept, sector, start: startStr, end: endStr, duration: dur, durationMin: durMin, earned };
-        } else {
-            const idx = parseInt(sourceId);
-            const finType = document.getElementById('le-fin-type').value;
-            const amount = parseFloat(document.getElementById('le-amount').value);
-            if (!amount || amount <= 0) { alert('Ingrese un monto válido.'); return; }
-            db.finance[idx] = { ...db.finance[idx], reason: concept, sector, type: finType, amount };
-        }
-        saveAndRefresh();
-        document.getElementById('ledger-edit-modal').style.display = 'none';
-        openModal('ledger-modal');
-    }
-
-    function deleteLedgerEntry() {
-        const sourceType = document.getElementById('le-source').value;
-        const sourceId = document.getElementById('le-id').value;
-        if (!confirm('¿Eliminar este movimiento del libro?')) return;
-        if (sourceType === 'session') {
-            db.sessions = db.sessions.filter(x => String(x.id) !== sourceId);
-        } else {
-            const idx = parseInt(sourceId);
-            db.finance.splice(idx, 1);
-        }
-        saveAndRefresh();
-        document.getElementById('ledger-edit-modal').style.display = 'none';
-        openModal('ledger-modal');
-    }
-
-    function showRetiroModal(data) {
-        pendingRetiroData = data;
-        const isDebit = data.type === 'deuda' || data.type === 'retiro';
-        const typeLabel = { deuda: 'ADELANTO / DEUDA', pago: 'PAGO COMPLETO', pago_parcial: 'PAGO PARCIAL', retiro: 'RETIRO DE EFECTIVO' };
-        const signLabel = isDebit ? '↓ RESTA del balance' : '↑ SUMA al balance';
-        const signColor = isDebit ? '#ff6688' : '#44ffaa';
-        const sec = data.sector;
-        const earned = db.sessions.filter(s => s.sector === sec).reduce((a, b) => a + b.earned, 0);
-        const restan = db.finance.filter(f => f.sector === sec && (f.type === 'deuda' || f.type === 'retiro')).reduce((a, b) => a + b.amount, 0);
-        const suman = db.finance.filter(f => f.sector === sec && (f.type === 'pago' || f.type === 'pago_parcial')).reduce((a, b) => a + b.amount, 0);
-        const balActual = earned + suman - restan;
-        const balDespues = balActual + (isDebit ? -data.amount : data.amount);
-        document.getElementById('retiro-resumen').innerHTML = `<div style="margin-bottom:10px; font-size:1.1rem; font-weight:bold; color:var(--primary);">${typeLabel[data.type] || data.type}</div><div>Sector: <strong>${data.sector}</strong></div><div>Concepto: <em>${data.reason}</em></div><div style="margin-top:10px; font-size:1.2rem; color:${signColor}; font-family:'Orbitron';">${isDebit ? '-' : '+'}$${data.amount.toFixed(2)}</div><div style="margin-top:8px; font-size:0.85rem; color:var(--text-dim);">${signLabel}</div><hr style="margin:12px 0; opacity:0.2;"><div style="display:flex; justify-content:space-between; font-size:0.9rem;"><span>Saldo actual:</span><strong style="color:${balActual >= 0 ? '#44ffaa' : '#ff6688'}">$${balActual.toFixed(2)}</strong></div><div style="display:flex; justify-content:space-between; font-size:0.9rem; margin-top:4px;"><span>Saldo después:</span><strong style="color:${balDespues >= 0 ? '#44ffaa' : '#ff6688'}">$${balDespues.toFixed(2)}</strong></div>${balDespues === 0 ? '<div style="margin-top:8px; color:#00f3ff; font-weight:bold;">✅ Balance quedaría en CERO</div>' : ''}`;
-        document.getElementById('retiro-modal').style.display = 'flex';
-    }
-
-    function confirmRetiro(yaRetirado) {
-        if (!pendingRetiroData) return;
-        const entry = { ...pendingRetiroData, retirado: yaRetirado, date: new Date().toLocaleString() };
-        db.finance.push(entry);
-        saveAndRefresh();
-        pendingRetiroData = null;
-        document.getElementById('retiro-modal').style.display = 'none';
-        document.getElementById('adv-amount').value = '';
-        document.getElementById('adv-reason').value = '';
-        selectFinType('deuda');
-    }
-
-    const FIN_TYPE_INFO = {
-        deuda: { label: 'ADELANTO / DEUDA', icon: 'fa-arrow-down', color: 'var(--danger)', sign: -1, desc: 'Resta del balance.' },
-        pago: { label: 'PAGO COMPLETO', icon: 'fa-arrow-up', color: 'var(--success)', sign: +1, desc: 'Pago total recibido.' },
-        pago_parcial: { label: 'PAGO PARCIAL', icon: 'fa-percent', color: 'var(--primary)', sign: +1, desc: 'Pago parcial recibido.' },
-        retiro: { label: 'RETIRO DE EFECTIVO', icon: 'fa-wallet', color: 'var(--secondary)', sign: -1, desc: 'Retiro propio.' }
-    };
-
-    function selectFinType(type) {
-        currentFinType = type;
-        document.getElementById('adv-type').value = type;
-        document.querySelectorAll('.fin-type-btn').forEach(btn => {
-            const t = btn.dataset.type;
-            const info = FIN_TYPE_INFO[t];
-            const isActive = t === type;
-            btn.style.borderColor = isActive ? info.color : '#444';
-            btn.style.background = isActive ? `rgba(255,0,85,0.12)` : 'transparent';
-            btn.style.color = isActive ? info.color : '#888';
-        });
-        document.getElementById('fin-type-desc').innerText = FIN_TYPE_INFO[type].desc;
-        const showSaldo = type === 'pago_parcial';
-        document.getElementById('saldo-pendiente-info').style.display = showSaldo ? 'block' : 'none';
-        if (showSaldo) updateSaldoPendiente();
-    }
-
-    function updateSaldoPendiente() {
-        const sec = document.getElementById('adv-sector').value;
-        const earned = db.sessions.filter(s => s.sector === sec).reduce((a, b) => a + b.earned, 0);
-        const deudas = db.finance.filter(f => f.sector === sec && (f.type === 'deuda' || f.type === 'retiro')).reduce((a, b) => a + b.amount, 0);
-        const pagos = db.finance.filter(f => f.sector === sec && (f.type === 'pago' || f.type === 'pago_parcial')).reduce((a, b) => a + b.amount, 0);
-        const net = earned + pagos - deudas;
-        document.getElementById('saldo-pendiente-val').innerText = `$${net.toFixed(2)}`;
-    }
-
     function commitFinance() {
-        const type = document.getElementById('adv-type').value || 'deuda';
+        const type = document.getElementById('adv-type').value;
         const sector = document.getElementById('adv-sector').value;
         const amount = parseFloat(document.getElementById('adv-amount').value);
         const reason = document.getElementById('adv-reason').value;
-        if (!amount || amount <= 0) { alert("Ingrese un monto válido mayor a 0."); return; }
-        if (!reason.trim()) { alert("Ingrese un motivo o concepto."); return; }
+        if (!amount || amount <= 0) { alert("Monto válido requerido"); return; }
+        if (!reason.trim()) { alert("Concepto requerido"); return; }
+        db.finance.push({ id: Date.now(), type, sector, amount, reason, date: new Date().toLocaleString() });
+        saveAndRefresh();
         closeModals();
-        showRetiroModal({ type, sector, amount, reason });
+        document.getElementById('adv-amount').value = '';
+        document.getElementById('adv-reason').value = '';
+        alert('✅ Movimiento registrado');
     }
 
     function updateBalances() {
         const container = document.getElementById('balances-render');
         const history = document.getElementById('history-log');
         if (!container) return;
-        container.innerHTML = '';
-        history.innerHTML = '';
+        container.innerHTML = ''; history.innerHTML = '';
         ['Interno', 'Externo', 'Especial'].forEach(sec => {
             const earned = db.sessions.filter(s => s.sector === sec).reduce((a, b) => a + b.earned, 0);
-            const restan = db.finance.filter(f => f.sector === sec && (f.type === 'deuda' || f.type === 'retiro')).reduce((a, b) => a + b.amount, 0);
-            const suman = db.finance.filter(f => f.sector === sec && (f.type === 'pago' || f.type === 'pago_parcial')).reduce((a, b) => a + b.amount, 0);
-            const net = earned + suman - restan;
-            container.innerHTML += `<div class="balance-tag"><span style="font-weight:bold; color:var(--text-main);">${sec.toUpperCase()}</span><span style="font-family:Orbitron; color:${net < 0 ? 'var(--danger)' : 'var(--success)'}; font-size:1.3rem;">$${net.toFixed(2)}</span></div>`;
+            const debits = db.finance.filter(f => f.sector === sec && (f.type === 'deuda' || f.type === 'retiro')).reduce((a, b) => a + b.amount, 0);
+            const credits = db.finance.filter(f => f.sector === sec && f.type === 'pago').reduce((a, b) => a + b.amount, 0);
+            const net = earned + credits - debits;
+            container.innerHTML += `<div class="balance-tag"><span>${sec.toUpperCase()}</span><span style="font-family:Orbitron; color:${net < 0 ? 'var(--danger)' : 'var(--success)'};">$${net.toFixed(2)}</span></div>`;
         });
-        const typeLabel = { deuda: 'ADELANTO', pago: 'PAGO', pago_parcial: 'PAGO PARCIAL', retiro: 'RETIRO EFECT.' };
-        const typeColor = { deuda: 'var(--danger)', pago: 'var(--success)', pago_parcial: 'var(--primary)', retiro: 'var(--secondary)' };
-        db.finance.slice().reverse().forEach(f => {
-            const lbl = typeLabel[f.type] || f.type.toUpperCase();
-            const col = typeColor[f.type] || 'var(--text-main)';
-            const retiroTag = f.retirado === true ? `<span style="color:#44ffaa; font-size:0.75rem; margin-left:8px;">✅ retirado</span>` : f.retirado === false ? `<span style="color:#ffaa44; font-size:0.75rem; margin-left:8px;">⏳ pendiente</span>` : '';
-            history.innerHTML += `<div style="padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.07); color: ${col}; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:4px;"><span>[${f.date}] ${f.sector.toUpperCase()} — ${lbl}: $${f.amount.toFixed(2)}</span><span>${f.reason}${retiroTag}</span></div>`;
-        });
+        db.finance.slice().reverse().forEach(f => { history.innerHTML += `<div style="padding:8px; border-bottom:1px solid rgba(255,255,255,0.1);">[${f.date}] ${f.sector}: $${f.amount.toFixed(2)} - ${f.reason}</div>`; });
     }
 
     function renderLedger() {
-        const sectorFilter = document.getElementById('ledger-filter-sector')?.value || 'all';
-        const fromFilter = document.getElementById('ledger-filter-from')?.value || '';
-        const toFilter = document.getElementById('ledger-filter-to')?.value || '';
-        const companyEl = document.getElementById('ledger-title-company');
-        if (companyEl) companyEl.innerText = db.config.company;
-        const generatedEl = document.getElementById('ledger-generated');
-        if (generatedEl) generatedEl.innerText = `GENERADO: ${new Date().toLocaleDateString('es-ES')}`;
-        let entries = [];
-        db.sessions.forEach(s => { entries.push({ date: s.date, concept: `Jornada: ${s.task.substring(0, 40)}${s.task.length > 40 ? '…' : ''}  [${s.start}–${s.end}]`, sector: s.sector, debit: 0, credit: s.earned, sourceType: 'session', sourceId: String(s.id) }); });
-        db.finance.forEach((f, idx) => {
-            const d = new Date(f.date);
-            const dateISO = isNaN(d) ? '—' : d.toISOString().split('T')[0];
-            const isDebit = f.type === 'deuda' || f.type === 'retiro';
-            const typeLabel = { deuda: 'ADELANTO', pago: 'PAGO COMPLETO', pago_parcial: 'PAGO PARCIAL', retiro: 'RETIRO EFECTIVO' };
-            entries.push({ date: dateISO, concept: `${typeLabel[f.type] || f.type.toUpperCase()}: ${f.reason}`, sector: f.sector, debit: isDebit ? f.amount : 0, credit: !isDebit ? f.amount : 0, sourceType: 'finance', sourceId: String(idx) });
-        });
-        if (sectorFilter !== 'all') entries = entries.filter(e => e.sector === sectorFilter);
-        if (fromFilter) entries = entries.filter(e => e.date >= fromFilter);
-        if (toFilter) entries = entries.filter(e => e.date <= toFilter);
-        entries.sort((a, b) => a.date.localeCompare(b.date));
-        const dateRangeEl = document.getElementById('ledger-date-range');
-        if (dateRangeEl) dateRangeEl.innerText = entries.length ? `${entries[0].date} al ${entries[entries.length - 1].date}` : 'Sin registros';
         const tbody = document.getElementById('ledger-rows');
         if (!tbody) return;
         tbody.innerHTML = '';
-        let runningBalance = 0, totalDebit = 0, totalCredit = 0;
-        entries.forEach(e => {
-            runningBalance += e.credit - e.debit;
-            totalDebit += e.debit;
-            totalCredit += e.credit;
-            const balColor = runningBalance < 0 ? '#ff6688' : runningBalance === 0 ? '#00f3ff' : '#44ffaa';
-            const tr = document.createElement('tr');
-            tr.innerHTML = `<td style="white-space:nowrap;">${e.date}</td><td>${e.concept}</td><td style="text-align:center;">${e.sector}</td><td class="ledger-debit">${e.debit > 0 ? '$' + e.debit.toFixed(2) : '—'}</td><td class="ledger-credit">${e.credit > 0 ? '$' + e.credit.toFixed(2) : '—'}</td><td class="ledger-balance" style="color:${balColor};">${runningBalance === 0 ? '✅ ' : ''}$${runningBalance.toFixed(2)}</td><td class="no-print" style="text-align:center;"><button class="ledger-edit-btn" onclick="openLedgerEdit('${e.sourceType}','${e.sourceId}')"><i class="fa-solid fa-pen"></i></button></td>`;
-            tbody.appendChild(tr);
-        });
-        const totalRow = document.createElement('tr');
-        totalRow.className = 'ledger-total-row';
-        const totalNet = totalCredit - totalDebit;
-        const totalColor = totalNet < 0 ? '#ff6688' : totalNet === 0 ? '#00f3ff' : '#44ffaa';
-        totalRow.innerHTML = `<td colspan="3" style="font-family:'Orbitron'; font-size:0.8rem; color:var(--primary);">TOTALES</td><td class="ledger-debit" style="font-size:1rem;">$${totalDebit.toFixed(2)}</td><td class="ledger-credit" style="font-size:1rem;">$${totalCredit.toFixed(2)}</td><td class="ledger-balance" style="font-size:1.1rem; color:${totalColor};">${totalNet === 0 ? '✅ ' : ''}$${totalNet.toFixed(2)}</td><td class="no-print"></td>`;
-        tbody.appendChild(totalRow);
-        const summary = document.getElementById('ledger-summary');
-        if (summary) {
-            summary.innerHTML = '';
-            ['Interno', 'Externo', 'Especial'].forEach(sec => {
-                const sEarned = db.sessions.filter(s => s.sector === sec).reduce((a, b) => a + b.earned, 0);
-                const sRestan = db.finance.filter(f => f.sector === sec && (f.type === 'deuda' || f.type === 'retiro')).reduce((a, b) => a + b.amount, 0);
-                const sSuman = db.finance.filter(f => f.sector === sec && (f.type === 'pago' || f.type === 'pago_parcial')).reduce((a, b) => a + b.amount, 0);
-                const sDeudas = db.finance.filter(f => f.sector === sec && f.type === 'deuda').reduce((a, b) => a + b.amount, 0);
-                const sRetiros = db.finance.filter(f => f.sector === sec && f.type === 'retiro').reduce((a, b) => a + b.amount, 0);
-                const sPagoC = db.finance.filter(f => f.sector === sec && f.type === 'pago').reduce((a, b) => a + b.amount, 0);
-                const sPagoP = db.finance.filter(f => f.sector === sec && f.type === 'pago_parcial').reduce((a, b) => a + b.amount, 0);
-                const sNet = sEarned + sSuman - sRestan;
-                summary.innerHTML += `<div style="border:1px solid var(--border); border-radius:10px; padding:15px; text-align:center;"><div style="font-family:'Orbitron'; font-size:0.8rem; color:var(--text-dim); margin-bottom:5px;">${sec.toUpperCase()}</div><div style="font-size:0.78rem;">Horas trabajadas: <span style="color:var(--success)">+$${sEarned.toFixed(2)}</span></div><div style="font-size:0.78rem;">Adelantos: <span style="color:var(--danger)">-$${sDeudas.toFixed(2)}</span></div><div style="font-size:0.78rem;">Retiros: <span style="color:var(--secondary)">-$${sRetiros.toFixed(2)}</span></div><div style="font-size:0.78rem;">Pago completo: <span style="color:var(--success)">+$${sPagoC.toFixed(2)}</span></div><div style="font-size:0.78rem;">Pago parcial: <span style="color:var(--primary)">+$${sPagoP.toFixed(2)}</span></div><div style="border-top:1px solid #333; margin-top:8px; padding-top:8px; font-family:'Orbitron'; font-size:1.1rem; color:${sNet < 0 ? 'var(--danger)' : 'var(--success)'}">$${sNet.toFixed(2)}</div></div>`;
-            });
-        }
-    }
-
-    function printLedger() { window.print(); }
-
-    async function captureLedger() {
-        const area = document.getElementById('ledger-capture-area');
-        const status = document.getElementById('capture-status');
-        try {
-            const canvas = await html2canvas(area, { backgroundColor: '#0a0a0a', scale: 2, useCORS: true, logging: false });
-            const link = document.createElement('a');
-            link.download = `nebula_libro_${new Date().toISOString().split('T')[0]}.png`;
-            link.href = canvas.toDataURL('image/png');
-            link.click();
-            if (status) { status.style.display = 'block'; setTimeout(() => status.style.display = 'none', 4000); }
-        } catch(e) { alert('Error al generar imagen.'); }
+        let entries = [];
+        db.sessions.forEach(s => { entries.push({ date: s.date, concept: s.task.substring(0, 40), sector: s.sector, debit: 0, credit: s.earned }); });
+        db.finance.forEach(f => { const isDebit = f.type === 'deuda' || f.type === 'retiro'; entries.push({ date: f.date?.split(',')[0] || '—', concept: f.reason, sector: f.sector, debit: isDebit ? f.amount : 0, credit: !isDebit ? f.amount : 0 }); });
+        entries.sort((a, b) => a.date.localeCompare(b.date));
+        entries.forEach(e => { tbody.innerHTML += `<tr><td>${e.date}</td><td>${e.concept}</td><td>${e.sector}</td><td class="ledger-debit">${e.debit > 0 ? '$' + e.debit.toFixed(2) : '—'}</td><td class="ledger-credit">${e.credit > 0 ? '$' + e.credit.toFixed(2) : '—'}</td></tr>`; });
     }
 
     function saveAndRefresh() {
@@ -1716,17 +701,16 @@
         db.config.company = document.getElementById('cfg-comp').value;
         db.config.user = document.getElementById('cfg-user').value;
         db.config.rate = parseFloat(document.getElementById('cfg-rate').value);
-        db.config.logo = document.getElementById('cfg-logo').value;
         saveAndRefresh();
         closeModals();
-        alert('✅ Configuración guardada y sincronizada');
+        alert('✅ Configuración guardada');
     }
 
     function formatHMS(s) { const h = Math.floor(s / 3600); const m = Math.floor((s % 3600) / 60); const sec = s % 60; return [h, m, sec].map(v => v < 10 ? "0" + v : v).join(":"); }
-    function openModal(id) { document.getElementById(id).style.display = 'flex'; if (id === 'ledger-modal') renderLedger(); if (id === 'config-modal') buildThemeGrid(); if (id === 'advance-modal') { selectFinType('deuda'); document.getElementById('adv-sector').onchange = () => { if (currentFinType === 'pago_parcial') updateSaldoPendiente(); }; } }
+    function openModal(id) { document.getElementById(id).style.display = 'flex'; if (id === 'ledger-modal') renderLedger(); if (id === 'config-modal') document.getElementById('theme-grid').innerHTML = THEMES.map(t => `<div onclick="applyTheme('${t.id}')" style="cursor:pointer; padding:10px; background:${t.preview.bg}; color:${t.preview.text}; border-radius:8px; text-align:center;">${t.icon} ${t.label}</div>`).join(''); }
     function closeModals() { document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'); }
     function changeMonth(dir) { viewDate.setMonth(viewDate.getMonth() + dir); renderCalendar(); }
-    function exportDB() { const data = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db)); const link = document.createElement('a'); link.setAttribute("href", data); link.setAttribute("download", "nebula_db_backup.json"); link.click(); }
+    function exportDB() { const a = document.createElement('a'); a.href = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db)); a.download = "nebula_db_backup.json"; a.click(); }
     function importDB(e) { const reader = new FileReader(); reader.onload = (ev) => { db = JSON.parse(ev.target.result); saveAndRefresh(); location.reload(); }; reader.readAsText(e.target.files[0]); }
 </script>
 </body>
