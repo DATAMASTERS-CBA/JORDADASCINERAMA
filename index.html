@@ -1011,6 +1011,7 @@
     firebase.initializeApp(FIREBASE_CONFIG);
     const firestoreDB = firebase.firestore();
     const NEBULA_DOC = firestoreDB.collection('nebula').doc('main');
+    const ACTIVE_SESSION_DOC = firestoreDB.collection('activeSession').doc('current');
 
     // ── ESTADO GLOBAL ──────────────────────────────────────────
     let db = {
@@ -1030,9 +1031,8 @@
     let currentEditDate = null;
     let currentFinType = 'deuda';
     
-    // Variables para control de jornada activa
-    let activeSessionDate = null;
-    let activeSessionStart = null;
+    // Variables para control de jornada activa (ahora desde Firestore)
+    let activeSession = { date: null, startTime: null, userId: null };
 
     // ── VARIABLES PARA SINCRONIZACIÓN EN TIEMPO REAL ────────────
     let isSyncing = false;
@@ -1063,6 +1063,16 @@
         isSyncing = false;
     }
 
+    async function updateActiveSessionInFirestore(date, start, userId, isActive) {
+        try {
+            if (isActive) {
+                await ACTIVE_SESSION_DOC.set({ date, startTime: start, userId, active: true, timestamp: Date.now() });
+            } else {
+                await ACTIVE_SESSION_DOC.set({ active: false, timestamp: Date.now() });
+            }
+        } catch(e) { console.warn('Error actualizando sesión activa:', e); }
+    }
+
     function pullFromFirestore(snapshot) {
         if (!snapshot.exists || isSyncing) return;
         const remoteData = snapshot.data();
@@ -1076,6 +1086,18 @@
             if (typeof renderLedger === 'function') renderLedger();
             if (currentEditDate) renderDayLogs(currentEditDate, editMode);
             updateSyncStatus('Sincronizado');
+        }
+    }
+
+    function pullActiveSession(snapshot) {
+        if (snapshot.exists) {
+            const data = snapshot.data();
+            if (data && data.active) {
+                activeSession = { date: data.date, startTime: data.startTime, userId: data.userId };
+            } else {
+                activeSession = { date: null, startTime: null, userId: null };
+            }
+            renderCalendar(); // Refrescar calendario para mostrar/ocultar el indicador
         }
     }
 
@@ -1094,6 +1116,7 @@
                 }
             }
             NEBULA_DOC.onSnapshot(pullFromFirestore);
+            ACTIVE_SESSION_DOC.onSnapshot(pullActiveSession);
         } catch(e) {
             console.warn('Firestore no disponible:', e);
             const saved = localStorage.getItem('nebula_corp_db');
@@ -1222,9 +1245,10 @@
     function startEngine() {
         startTime = new Date();
         const isHasta = currentTimeMode === 'hasta';
-        activeSessionDate = startTime.toISOString().split('T')[0];
-        activeSessionStart = startTime;
-        renderCalendar();
+        const todayStr = startTime.toISOString().split('T')[0];
+        
+        // Guardar en Firestore que hay una sesión activa (para que TODOS lo vean)
+        updateActiveSessionInFirestore(todayStr, startTime.toLocaleTimeString(), 'user_' + Date.now(), true);
 
         if (isHasta) {
             document.getElementById('chrono-display').classList.add('timer-mode-active');
@@ -1255,6 +1279,8 @@
         document.getElementById('work-desc').disabled = true;
         document.getElementById('tab-libre').disabled = true;
         document.getElementById('tab-hasta').disabled = true;
+        
+        renderCalendar(); // Refrescar para mostrar el indicador inmediatamente
     }
 
     function stopEngine(auto = false) {
@@ -1280,14 +1306,17 @@
                 duration: durationSec, durationMin: durationMin, sector: sector, task: desc, earned: earned
             });
         }
-        activeSessionDate = null;
-        activeSessionStart = null;
+        
+        // Limpiar sesión activa en Firestore
+        updateActiveSessionInFirestore(null, null, null, false);
+        
         saveAndRefresh();
         resetControlPanel();
         if (auto) {
             playNotificationBeeps();
             setTimeout(() => { alert(`✅ JORNADA COMPLETADA\nDuración cobrada: ${formatHMS(durationSec)}\nMinutos: ${durationMin} min\nGanado: $${earned.toFixed(2)}`); }, 700);
         }
+        renderCalendar(); // Refrescar para quitar el indicador
     }
 
     function resetControlPanel() {
@@ -1330,7 +1359,8 @@
             const isWeekend = [0, 6].includes(dow);
             const hasData = db.sessions.some(s => s.date === dateISO);
             const isToday = dateISO === todayStr;
-            const isActiveDay = isToday && activeSessionDate !== null;
+            // Verificar si hay sesión activa (desde Firestore) en el día actual
+            const isActiveDay = isToday && activeSession && activeSession.active === true;
             const daySessions = db.sessions.filter(s => s.date === dateISO);
             const lastSession = daySessions.length > 0 ? daySessions[daySessions.length - 1] : null;
             const totalEarned = daySessions.reduce((sum, s) => sum + s.earned, 0);
