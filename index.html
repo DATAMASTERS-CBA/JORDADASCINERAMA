@@ -695,7 +695,18 @@
             0%, 100% { opacity: 0.7; box-shadow: 0 0 0px var(--primary); }
             50% { opacity: 1; text-shadow: 0 0 5px var(--primary); box-shadow: 0 0 8px var(--primary); }
         }
-        .working-indicator i { font-size: 0.7rem; }
+        .working-indicator i {
+            font-size: 0.7rem;
+            animation: walkIcon 0.6s steps(1) infinite;
+            display: inline-block;
+        }
+        @keyframes walkIcon {
+            0%   { transform: translateX(0px) scaleX(1); }
+            25%  { transform: translateX(2px) scaleX(1); }
+            50%  { transform: translateX(0px) scaleX(-1); }
+            75%  { transform: translateX(-2px) scaleX(-1); }
+            100% { transform: translateX(0px) scaleX(1); }
+        }
 
         /* ===== RESUMEN DE JORNADA FINALIZADA ===== */
         .session-summary {
@@ -1363,11 +1374,13 @@
             // <-- MODIFICADO: Usar activeSession desde Firestore
             const isActiveDay = isToday && activeSession.active === true;
             const daySessions = db.sessions.filter(s => s.date === dateISO);
-            const lastSession = daySessions.length > 0 ? daySessions[daySessions.length - 1] : null;
             const totalEarned = daySessions.reduce((sum, s) => sum + s.earned, 0);
+            const totalDuration = daySessions.reduce((sum, s) => sum + (s.duration || 0), 0);
+            const firstSession = daySessions.length > 0 ? daySessions[0] : null;
+            const lastSession = daySessions.length > 0 ? daySessions[daySessions.length - 1] : null;
             const dayDiv = document.createElement('div');
             dayDiv.className = `day ${isWeekend ? 'day-weekend' : ''} ${hasData ? 'day-has-data' : ''} ${isToday ? 'day-today' : ''}`;
-            dayDiv.innerHTML = `<div class="day-num">${d}</div>${totalEarned > 0 ? `<div style="color:var(--success);font-weight:bold;font-size:0.9rem;">$${totalEarned.toFixed(0)}</div>` : ''}${daySessions.length > 0 ? `<div style="color:var(--text-dim);font-size:0.75rem;">${daySessions.length} jornada${daySessions.length > 1 ? 's' : ''}</div>` : ''}${hasData ? `<button class="day-edit-btn no-print" onclick="event.stopPropagation(); openDayDetail('${dateISO}', true)"><i class="fa-solid fa-pen" style="font-size:0.6rem;"></i> EDITAR</button>` : ''}${isActiveDay ? `<div class="working-indicator"><i class="fa-solid fa-person-walking-arrow-right"></i> TRABAJANDO</div>` : ''}${!isActiveDay && lastSession ? `<div class="session-summary"><span>🕒 ${lastSession.start} → ${lastSession.end}</span><span class="session-hours">⏱️ ${formatHMS(lastSession.duration)}</span><span class="session-earned">💰 $${lastSession.earned.toFixed(2)}</span></div>` : ''}`;
+            dayDiv.innerHTML = `<div class="day-num">${d}</div>${totalEarned > 0 ? `<div style="color:var(--success);font-weight:bold;font-size:0.9rem;">$${totalEarned.toFixed(0)}</div>` : ''}${daySessions.length > 0 ? `<div style="color:var(--text-dim);font-size:0.75rem;">${daySessions.length} jornada${daySessions.length > 1 ? 's' : ''}</div>` : ''}${hasData ? `<button class="day-edit-btn no-print" onclick="event.stopPropagation(); openDayDetail('${dateISO}', true)"><i class="fa-solid fa-pen" style="font-size:0.6rem;"></i> EDITAR</button>` : ''}${isActiveDay ? `<div class="working-indicator"><i class="fa-solid fa-person-walking-arrow-right"></i> TRABAJANDO</div>` : ''}${!isActiveDay && firstSession ? `<div class="session-summary"><span>🕒 ${firstSession.start} → ${lastSession.end}</span><span class="session-hours">⏱️ ${formatHMS(totalDuration)}</span><span class="session-earned">💰 $${totalEarned.toFixed(2)}</span></div>` : ''}`;
             dayDiv.onclick = () => openDayDetail(dateISO, false);
             body.appendChild(dayDiv);
         }
